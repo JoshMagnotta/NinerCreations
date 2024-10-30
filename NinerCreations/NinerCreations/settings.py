@@ -54,7 +54,7 @@ ROOT_URLCONF = 'NinerCreations.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "NinerCreations" / "templates"],  # Add the path to your templates directory here
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,6 +66,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'NinerCreations.wsgi.application'
 
