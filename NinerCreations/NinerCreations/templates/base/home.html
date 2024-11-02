@@ -1,7 +1,22 @@
-<!-- templates/base/home.html -->
 {% extends "base/base.html" %}
 
 {% block content %}
-<h1>Home Page</h1>
-<p>This is the home page content.</p>
+<div class="content-grid">
+    <!-- Left Sidebar -->
+    <aside class="sidebar-left">
+        <h2>Browse Topics</h2>
+        <!-- Additional dynamic topic content can go here -->
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Posts or main page content will be dynamically loaded here -->
+    </main>
+
+    <!-- Right Sidebar (Recent Activity) -->
+    <aside class="sidebar-right">
+        <h2>Recent Activity</h2>
+        <!-- Dynamic recent activity content will be loaded here -->
+    </aside>
+</div>
 {% endblock %}

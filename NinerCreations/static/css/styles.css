@@ -117,3 +117,54 @@
 .profile-container:hover .dropdown-content {
     display: block;
 }
+
+/* Grid layout for the main content */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr; /* Left sidebar, main content, right sidebar */
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Left Sidebar */
+.sidebar-left {
+    background-color: #f0f4f7;
+    padding: 20px;
+    border-radius: 8px;
+    height: 40vw;
+    position: sticky;
+}
+
+/* Main Content Area */
+.main-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Right Sidebar (Recent Activity) */
+.sidebar-right {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 8px;
+    height: 40vw;
+    position: sticky;
+}
+
+/* Headings in Sidebars */
+.sidebar-left h2,
+.sidebar-right h2 {
+    font-size: 1.5rem;
+    color: #2d6a4f; /* Matches the header color for consistency */
+}
+
+/* Responsiveness for Smaller Screens */
+@media (max-width: 768px) {
+    .content-grid {
+        grid-template-columns: 1fr; /* Stacks columns vertically on small screens */
+    }
+
+    .sidebar-left, .main-content, .sidebar-right {
+        margin-bottom: 20px;
+    }
+}
