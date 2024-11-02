@@ -1,18 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NinerCreations</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-</head>
-<body>
+<!-- templates/base/home.html -->
+{% extends "base/base.html" %}
 
-    {% include "base/header.html" %}
-
-    <!-- Page content goes here -->
-    <h1>Welcome to NinerCreations</h1>
-
-</body>
-</html>
+{% block content %}
+<h1>Home Page</h1>
+<p>This is the home page content.</p>
+{% endblock %}

@@ -1,9 +1,12 @@
 <!-- templates/base/header.html -->
 {% load static %}
 
+<!-- templates/base/header.html -->
 <div class="header">
     <div class="logo">
-        <h1>NinerCreations</h1>
+        <a href="{% url 'home' %}">
+            <h1>NinerCreations</h1>
+        </a>
     </div>
     <div class="search-bar">
         <input type="text" placeholder="Search">
@@ -11,8 +14,18 @@
     </div>
     <div class="header-right">
         <a href="#" class="login-btn">Login</a>
-        <div class="profile-picture">
-            <img src="{% static 'images/profile-placeholder.png' %}" alt="Profile Picture">
+        <div class="profile-container">
+            <div class="profile-picture">
+                <img src="{% static 'images/profile-placeholder.png' %}" alt="Profile Picture">
+            </div>
+            <div class="dropdown">
+                <button class="dropdown-btn">▼</button>
+                <div class="dropdown-content">
+                    <a href="{% url 'profile' %}">Profile</a>
+                    <a href="{% url 'settings' %}">Settings</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
