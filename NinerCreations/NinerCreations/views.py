@@ -10,3 +10,7 @@ def profile(request):
 
 def settings(request):
     return render(request, 'base/settings.html')
+
+def login(request):
+    return render(request, 'base/login.html')
+
