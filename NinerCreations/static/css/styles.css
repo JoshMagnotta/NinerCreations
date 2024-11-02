@@ -1,0 +1,70 @@
+/* static/css/styles.css */
+
+* {
+    padding: 0;
+    margin: 0;
+}
+/* File: static/css/styles.css */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1A3D31;
+    padding: 10px 20px;
+    color: white;
+}
+
+.logo h1 {
+    font-size: 24px;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.search-bar {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-bar input {
+    width: 60%;
+    padding: 8px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.search-bar button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: -30px; /* Overlaps the input slightly */
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.login-btn {
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+}
+
+.profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
