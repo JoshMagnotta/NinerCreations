@@ -30,14 +30,20 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+# settings.py
 INSTALLED_APPS = [
+    # Other Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Your app
+    'NinerCreations',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

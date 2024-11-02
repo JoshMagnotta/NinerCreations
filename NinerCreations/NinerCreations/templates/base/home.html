@@ -5,18 +5,36 @@
     <!-- Left Sidebar -->
     <aside class="sidebar-left">
         <h2>Browse Topics</h2>
-        <!-- Additional dynamic topic content can go here -->
     </aside>
 
     <!-- Main Content Area -->
     <main class="main-content">
-        <!-- Posts or main page content will be dynamically loaded here -->
+        <!-- Main content here -->
     </main>
 
     <!-- Right Sidebar (Recent Activity) -->
     <aside class="sidebar-right">
         <h2>Recent Activity</h2>
-        <!-- Dynamic recent activity content will be loaded here -->
+        <ul class="recent-activity-list">
+            {% for activity in recent_activities %}
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        {% if activity.activity_type == 'Post' %} 📝 {% elif activity.activity_type == 'Comment' %} 💬 {% endif %}
+                    </div>
+                    <div class="activity-details">
+                        <strong>{{ activity.activity_type }}:</strong> 
+                        {% if activity.activity_type == "Post" %}
+                            {{ activity.title }}
+                        {% else %}
+                            {{ activity.content|truncatewords:10 }}
+                        {% endif %}
+                        <br>
+                        <em>{{ activity.author.username }}</em>
+                        {% if activity.activity_type == "Comment" %} on {{ activity.post.title }} {% endif %} - {{ activity.created_at|date:"M d, Y H:i" }}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
     </aside>
 </div>
 {% endblock %}

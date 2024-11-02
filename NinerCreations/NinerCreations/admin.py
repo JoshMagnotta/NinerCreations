@@ -1,4 +1,6 @@
 from django.contrib import admin
-from .models import MyModel
+from .models import Post, Comment
 
-admin.site.register(MyModel)
+# admin.site.register(NinerCreations)
+admin.site.register(Post)
+admin.site.register(Comment)
