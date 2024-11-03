@@ -11,4 +11,29 @@
     </div>
     <a href="{% url 'home' %}">← Back to Home</a>
 </div>
+
+<!-- Comment Section -->
+<div class="comment-section">
+    <h3>Comments</h3>
+    
+    <!-- Comment Form -->
+    <form method="POST" action="{% url 'post_detail' post.id %}">
+        {% csrf_token %}
+        <textarea name="content" rows="4" placeholder="Write a comment..." required></textarea>
+        <br>
+        <button type="submit">Submit Comment</button>
+    </form>
+
+    <ul id="commentList" class="comment-list">
+        {% for comment in post.comments.all %}
+            <li class="comment">
+                {% if comment.author %}
+                    {{ comment.author.username }}: {{ comment.content }}
+                {% else %}
+                    Guest: {{ comment.content }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}
