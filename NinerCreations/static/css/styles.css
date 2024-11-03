@@ -57,8 +57,14 @@ html, body {
     align-items: center;
 }
 
+.search-bar form {
+    width: 60%; /* Set the form to take 60% of the available space */
+    display: flex;
+    align-items: center;
+}
+
 .search-bar input {
-    width: 60%;
+    width: 100%; /* Make the input take the full width of the form */
     padding: 8px;
     border-radius: 20px;
     border: 1px solid #ccc;
@@ -72,6 +78,7 @@ html, body {
     cursor: pointer;
     margin-left: -30px;
 }
+
 
 .header-right {
     display: flex;

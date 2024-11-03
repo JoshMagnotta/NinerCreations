@@ -21,6 +21,7 @@ from . import views
 urlpatterns = [
     path('', views.home_view, name='home'),
     path('post/<int:post_id>/', views.post_detail, name='post_detail'),  # New URL pattern for post detail
+    path('search/', views.search, name='search'),  # Added search URL
     path('profile/', views.profile, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('login/', views.login, name='login'),

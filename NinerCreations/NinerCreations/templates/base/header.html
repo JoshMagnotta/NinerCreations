@@ -8,10 +8,14 @@
             <h1>NinerCreations</h1>
         </a>
     </div>
+    <!-- header.html -->
     <div class="search-bar">
-        <input type="text" placeholder="Search">
-        <button type="button">🔍</button>
+        <form action="{% url 'search' %}" method="get">
+            <input type="text" name="q" placeholder="Search" value="{{ request.GET.q|default:'' }}">
+            <button type="submit">&#128269;</button> <!-- Search icon as button -->
+        </form>
     </div>
+
     <div class="header-right">
         <a href="{% url 'login' %}" class="login-btn">Login</a>
         <div class="profile-container">
