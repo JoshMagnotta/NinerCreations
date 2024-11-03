@@ -11,11 +11,15 @@
 <body>
     <!-- Header -->
     {% include "base/header.html" %}
+   
+
     
     <!-- Main content area -->
     <div class="content">
         {% block content %}
         {% endblock %}
     </div>
+    <!-- Footer -->
+    {% include 'base/footer.html' %}
 </body>
 </html>

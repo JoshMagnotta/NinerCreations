@@ -1,0 +1,32 @@
+<!-- templates/base/footer.html -->
+{% load static %}
+
+<!-- templates/base/footer.html -->
+<div class="footer">
+    <div class="footer-content">
+        <div class="footer-section about">
+            <h2>NinerCreations</h2>
+        </div>
+
+        <div class="footer-section contact">
+            <h2>Contact Us</h2>
+            <p>Email: <a href="mailto:jmcdon53@uncc.edu">ninercreationssupport@gmail.com</a></p>
+            <p>Phone: +330-451-9061</p>
+            <p>Address: 9600 University City Blvd., Charlotte, NC</p>
+        </div>
+
+        <div class="footer-section social">
+            <h2>Follow Us</h2>
+            <div class="social-icons">
+                <a href="https://facebook.com" target="_blank"><img style="width: 29px;"src="{% static 'images/facebook-logo.png' %}" alt="Facebook"></a>
+                <a href="https://twitter.com" target="_blank"><img style="width: 29px;" src="{% static 'images/twitter-icon.png' %}" alt="Twitter"></a>
+                <a href="https://instagram.com" target="_blank"><img style="width: 29px;" src="{% static 'images/instagram-icon.png' %}" alt="Instagram"></a>
+                <a href="https://linkedin.com" target="_blank"><img style="width: 29px;" src="{% static 'images/linkedin-icon.png' %}" alt="LinkedIn"></a>
+            </div>
+        </div>        
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; {% now "Y" %} NinerCreations. All rights reserved.</p>
+    </div>
+</div>
