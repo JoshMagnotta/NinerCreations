@@ -28,3 +28,10 @@ class Comment(models.Model):
     @property
     def activity_type(self):
         return "Comment"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True, default='')
+
+    def __str__(self):
+        return self.user.username

@@ -2,9 +2,9 @@ from .models import Post, Comment
 from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post
-from .models import UserProfile
+from .forms import User
 
 def post_detail(request, post_id):
     # Retrieve the specific post using the provided post_id
@@ -48,6 +48,11 @@ def home_view(request):
         'posts': posts,
         'recent_activities': recent_activities
     })
+
+def profile_view(request, pk):  # Use pk as the parameter
+    user = get_object_or_404(User, pk=pk)  # Get the user by primary key
+    return render(request, 'base/profile.html', {'user': user})
+
 
 
 def home(request):
