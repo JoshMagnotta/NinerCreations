@@ -4,6 +4,12 @@
     padding: 0;
     margin: 0;
 }
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
 .header {
     display: flex;
     align-items: center;
@@ -11,6 +17,12 @@
     background-color: #1A3D31;
     padding: 10px 20px;
     color: white;
+
+    grid-row: 1;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
 }
 
 .logo a {
@@ -325,13 +337,33 @@
 }
 
 
+
+
+.content {
+    grid-row: 2;
+    margin-top: 60px; /* Adjust for header height */
+    margin-bottom: 60px; /* Adjust for footer height */
+    overflow-y: auto;
+    padding: 20px;
+}
+
+
 /* Footer styling */
+
 .footer {
     background-color: #1A3D31;
     color: white;
     padding: 20px 0;
     text-align: center;
     font-size: 0.9rem;
+    width: 100%;
+    bottom: 0;
+
+    grid-row: 3;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 10;
 }
 
 .footer-content {
