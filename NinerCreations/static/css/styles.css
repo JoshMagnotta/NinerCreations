@@ -325,97 +325,72 @@
 }
 
 
-/* start footer css */
+/* Footer styling */
 .footer {
     background-color: #1A3D31;
-    color: #FFFFFF;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    border-top: 4px solid #2d6a4f; /* Accent border for separation */
-    box-shadow: 0px -4px 8px rgba(0, 0, 0, 0.15);
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 0.9rem;
 }
 
 .footer-content {
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    gap: 20px;
-    flex-wrap: wrap;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-.footer-section {
+.footer-column {
     flex: 1;
-    min-width: 200px;
-    padding: 10px;
+    text-align: left;
+    padding: 0 20px;
+}
+.footer-column2 {
+    flex: 1;
+    text-align: right;
+    padding: 0 20px;
 }
 
 .footer-section h2 {
     font-size: 1.5rem;
-    color: #A5C9CA; /* Light color for headers */
-    margin-bottom: 15px;
-}
-
-.footer-section p,
-.footer-section a {
-    color: #D3E0DC; /* Subtle color for text */
-    font-size: 0.9rem;
-    line-height: 1.6;
-    text-decoration: none;
+    color: #FFFFFF;
     margin-bottom: 10px;
 }
 
+.footer-section p,
+.footer-bottom p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.footer-section a {
+    color: #c1e1c1;
+    text-decoration: none;
+}
+
 .footer-section a:hover {
-    color: #FFFFFF; /* Hover effect */
-    text-decoration: underline;
+    color: #f1f9f1;
 }
 
-/* Social Media Icons  */
-.footer-section .social a img {
-    width: 4px; /* Set the desired size */
-    height: auto; /* Maintain aspect ratio */
-    margin-right: 10px; /* Add space between icons */
-    vertical-align: middle; /* Align icons properly */
-}
-
-.footer-section .social {
-    display: flex;
-    gap: 10px; /* Space between icons */
-    align-items: center; /* Center vertically */
-}
-
- .footer-section .social-icon {
-    display: flex;
-    gap: 10px;
-}
-
-
-/* Footer Bottom */
 .footer-bottom {
-    text-align: center;
-    padding-top: 15px;
-    font-size: 0.8rem;
-    color: #A5C9CA;
-    border-top: 1px solid #2d6a4f; /* Divider */
-    margin-top: 20px;
+    margin-top: 10px;
+    color: #c1e1c1;
 }
 
-/* Responsive Adjustments */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .footer {
-        flex-direction: column;
-        align-items: center;
-    }
-
     .footer-content {
         flex-direction: column;
         align-items: center;
         text-align: center;
     }
-
-    .footer-section {
-        min-width: 100%;
+    
+    .footer-column {
         padding: 10px 0;
+        text-align: center;
     }
 }
+
