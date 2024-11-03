@@ -19,7 +19,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.recent_activity_view, name='home'),  # Update this to point to recent_activity_view
+    path('', views.home_view, name='home'),
     path('profile/', views.profile, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('login/', views.login, name='login'),

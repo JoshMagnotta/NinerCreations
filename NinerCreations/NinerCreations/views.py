@@ -22,6 +22,28 @@ def recent_activity_view(request):
         'recent_activities': recent_activities
     })
 
+def home_view(request):
+    # Retrieve all posts ordered by creation date (newest first)
+    posts = Post.objects.all().order_by('-created_at')
+    
+    # Retrieve the 10 most recent posts and comments
+    recent_posts = Post.objects.all().order_by('-created_at')[:10]
+    recent_comments = Comment.objects.all().order_by('-created_at')[:10]
+
+    # Combine posts and comments, then sort by created_at to get the 10 most recent activities
+    recent_activities = sorted(
+        list(recent_posts) + list(recent_comments),
+        key=lambda x: x.created_at,
+        reverse=True
+    )[:10]
+
+    # Pass both posts and recent_activities to the template
+    return render(request, 'base/home.html', {
+        'posts': posts,
+        'recent_activities': recent_activities
+    })
+
+
 def home(request):
     return render(request, 'base/home.html')
 
