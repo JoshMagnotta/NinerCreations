@@ -28,17 +28,14 @@
         <ul>
             {% for activity in recent_activities %}
                 <li>
-                    {% if activity.activity_type == "Post" %}
                     <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.id %}">
+                    {% if activity.activity_type == "Post" %}
                         Post: {{ activity.title }}
-                    </a>
                     {% elif activity.activity_type == "Comment" %}
-                    <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.post.id %}">
                         Comment: {{ activity.content }}
-                    </a>
                     {% endif %}
                         {{ activity.created_at|date:"M d, Y H:i" }}
-                    
+                    </a>
                 </li>
             {% endfor %}
         </ul>
