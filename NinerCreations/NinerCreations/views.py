@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.models import User
 from .models import Post, Activity
 
 def post_detail(request, post_id):
@@ -68,6 +69,31 @@ def profile_view(request):
         'recent_activities': recent_activities,
     }
     return render(request, 'base/profile.html', context)
+
+
+def user_profile_view(request, pk):
+    # Get the user object based on the primary key (pk)
+    user = get_object_or_404(User, pk=pk)
+    
+    # Fetch recent rooms, posts, and comments by the user
+    recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]  # Last 5 rooms
+    recent_posts = Post.objects.filter(author=user).order_by('-created_at')[:10]
+    recent_comments = Comment.objects.filter(author=user).order_by('-created_at')[:10]
+    
+    # Combine posts and comments, then sort by created_at to get the 10 most recent activities
+    recent_activities = sorted(
+        list(recent_posts) + list(recent_comments),
+        key=lambda x: x.created_at,
+        reverse=True
+    )[:10]
+
+    # Pass data to the template
+    context = {
+        'user': user,
+        'recent_rooms': recent_rooms,
+        'recent_activities': recent_activities,
+    }
+    return render(request, 'base/user_profile.html', context)
 
 def create_post(request):
     if request.method == 'POST':

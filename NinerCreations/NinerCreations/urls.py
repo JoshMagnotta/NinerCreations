@@ -26,6 +26,6 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('login/', views.login, name='login'),
     path('admin/', admin.site.urls, name='admin'),
-    path('profile/<int:pk>/', profile_view, name='profile'),
+    path('profile/<int:pk>/', views.user_profile_view, name='user_profile'),
 
 ]

@@ -457,6 +457,7 @@ html, body {
     line-height: 1.5;
 }
 
+
 /* Media Queries for Responsiveness */
 @media (max-width: 600px) {
     .profile-page-container {
