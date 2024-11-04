@@ -1,0 +1,25 @@
+<!-- templates/base/footer.html -->
+{% load static %}
+
+<div class="footer">
+    <div class="footer-content">
+        <!-- Left Column: NinerCreations and copyright -->
+        <div class="footer-column">
+            <div class="footer-section about">
+                <h2>NinerCreations</h2>
+            </div>
+            <hr style="width: 247px;">
+            <div class="footer-bottom">
+                <p>&copy; {% now "Y" %} NinerCreations. All rights reserved.</p>
+            </div>
+        </div>
+        <!-- Right Column: Contact Us -->
+        <div class="footer-column2">
+            <div class="footer-section contact">
+                <h2>Contact Us</h2>
+                <hr style="width: 240px; margin-left: auto;">
+                <p style="padding-top: 7px;">Email: <a href="mailto:ninercreationssupport@gmail.com">ninercreationssupport@gmail.com</a></p>
+            </div>
+        </div>
+    </div>
+</div>

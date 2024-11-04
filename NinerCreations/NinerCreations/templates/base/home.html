@@ -1,1 +1,57 @@
-<h1>Hello World!</h1>
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="content-grid">
+    <!-- Left Sidebar -->
+    <aside class="sidebar-left">
+        <h2>Browse Topics</h2>
+        <!-- Additional dynamic topic content can go here -->
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <h2>Latest Posts</h2>
+        <div class="posts-list">
+            {% for post in posts %}
+                <a href="{% url 'post_detail' post.id %}" class="post-item-link">
+                    <div class="post-item">
+                        <h3>{{ post.title }}</h3>
+                        <p>{{ post.content|truncatewords:20 }}</p> <!-- Truncate content to first 20 words -->
+                        <p class="post-meta">
+                            <em>by {{ post.author.username }}</em> - {{ post.created_at|date:"M d, Y H:i" }}
+                        </p>
+                    </div>
+                </a>
+            {% empty %}
+                <p>No posts available.</p>
+            {% endfor %}
+        </div>
+        
+    </main>
+
+    <!-- Right Sidebar (Recent Activity) -->
+    <aside class="sidebar-right">
+        <h2>Recent Activity</h2>
+        <ul class="recent-activity-list">
+            {% for activity in recent_activities %}
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        {% if activity.activity_type == 'Post' %} 📝 {% elif activity.activity_type == 'Comment' %} 💬 {% endif %}
+                    </div>
+                    <div class="activity-details">
+                        <strong>{{ activity.activity_type }}:</strong> 
+                        {% if activity.activity_type == "Post" %}
+                            {{ activity.title }}
+                        {% else %}
+                            {{ activity.content|truncatewords:10 }}
+                        {% endif %}
+                        <br>
+                        <em>{{ activity.author.username }}</em>
+                        {% if activity.activity_type == "Comment" %} on {{ activity.post.title }} {% endif %} - {{ activity.created_at|date:"M d, Y H:i" }}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </aside>
+</div>
+{% endblock %}
