@@ -85,6 +85,75 @@ html, body {
     font-size: 16px;
 }
 
+/* Register Page Styling */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f5f5f5; /* Match the card background on the main page */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #2c3e50; /* Match the color scheme */
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    color: #2c3e50; /* Dark color for labels */
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+form input {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+form button {
+    background-color: #2c3e50; /* Match button color with theme */
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #1a252f; /* Darken on hover */
+}
+
+a {
+    color: #2c3e50; /* Match link color with theme */
+}
+
+a:hover {
+    color: #1a252f; /* Darken on hover */
+    text-decoration: underline;
+}
+
+.alert {
+    background-color: #dff0d8;
+    color: #3c763d;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
 .profile-container {
     display: flex;
     align-items: center;
