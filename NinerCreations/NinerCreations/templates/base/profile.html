@@ -1,9 +1,70 @@
-<!-- templates/base/profile.html -->
 {% extends "base/base.html" %}
 
 {% block content %}
-<h1>{{ user.username }}'s Profile</h1>
-<p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-<p><strong>Email:</strong> {{ user.email }}</p>
-<p><strong>Bio:</strong> {{ user.bio }}</p> <!-- Assuming you have a bio field -->
+<div class="profile-page-container">
+    <h1>{{ user.username }}'s Profile</h1>
+    <p style="font-size: larger;"><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+
+    <h2>Recent Rooms</h2>
+    <div class="recent-rooms">
+        {% if recent_rooms %}
+            <ul>
+            {% for room in recent_rooms %}
+                <li>
+                    <strong>{{ room.name }}</strong> - Created on {{ room.created_at|date:"M d, Y" }}
+                    <p>{{ room.description }}</p>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No rooms created yet.</p>
+        {% endif %}
+    </div>
+
+    <h2>Recent Activities</h2>
+    <div class="recent-activities">
+        {{ recent_activities|length }}
+        {{ activity.author.username }}
+        {{ user.username }}
+        {% if recent_activities %}
+        <ul>
+        {% for activity in recent_activities %}
+            <!-- {% if activity.user == user_profile.user %}
+                <li>
+                    {% if activity.post %}
+                        <strong>{{ activity.post.title }}</strong>
+                    {% elif activity.comment %}
+                        <strong>{{ activity.comment.content|truncatewords:10 }}</strong>
+                    {% endif %}
+                    <div>
+                        {{ activity.timestamp|date:"M d, Y H:i" }} - {{ activity.get_action_display }}
+                        {% if activity.room %}
+                            in room <strong>{{ activity.room.name }}</strong>
+                        {% elif activity.post %}
+                            on post <strong>{{ activity.post.title }}</strong>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endif %} -->
+            <li>
+                {% if activity.action == 'CREATED_POST' %}
+                    <strong>{{ activity.post.title }}</strong>
+                    <div>
+                        {{ activity.timestamp|date:"M d, Y H:i" }} - Created a post
+                    </div>
+                {% elif activity.action == 'COMMENTED' %}
+                    <strong>{{ activity.comment.content|truncatewords:10 }}</strong>
+                    <div>
+                        {{ activity.timestamp|date:"M d, Y H:i" }} - Commented on post <strong>{{ activity.post.title }}</strong>
+                    </div>
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No recent activities.</p>
+    {% endif %}
+    
+    </div>
+</div>
 {% endblock %}
