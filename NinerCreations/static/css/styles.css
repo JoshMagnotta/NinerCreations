@@ -216,6 +216,11 @@ html, body {
     color: #888; /* Timestamp color */
 }
 
+.comment-list {
+    list-style-type: none;
+
+}
+
 .comment-content {
     margin-top: 5px; /* Space above comment content */
     font-size: 1rem; /* Regular font for comment content */
@@ -266,6 +271,10 @@ html, body {
 
 .btn-primary:hover {
     background-color: #2a6651; /* Darker shade on hover */
+}
+
+.btn {
+    margin-bottom: 20px;
 }
 
 /* Left Sidebar */
