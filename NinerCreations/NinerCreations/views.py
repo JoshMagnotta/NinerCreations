@@ -3,12 +3,26 @@ from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
-from .models import Post
+from .models import Post, Comment
 
 def post_detail(request, post_id):
-    # Retrieve the specific post using the provided post_id
     post = get_object_or_404(Post, id=post_id)
-    return render(request, 'base/post_detail.html', {'post': post})
+    comments = post.comments.all().order_by('-created_at')  # Fetch comments associated with the post
+
+    if request.method == 'POST':
+        content = request.POST.get('content')  # Get the comment content from the form
+
+        if content:
+            author = request.user if request.user.is_authenticated else None
+            Comment.objects.create(post=post, author=author, content=content)
+            # After adding the comment, fetch comments again to include the new one
+            comments = post.comments.all().order_by('-created_at')
+
+    # Render the post detail page with the post and comments
+    return render(request, 'base/post_detail.html', {
+        'post': post,
+        'comments': comments,
+    })
 
 # @login_required
 def recent_activity_view(request):
