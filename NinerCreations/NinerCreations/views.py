@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, UserProfile, Room, Activity
+from .models import Post, Activity
 
 def post_detail(request, post_id):
     # Retrieve the specific post using the provided post_id
@@ -48,11 +48,12 @@ def home_view(request):
         'recent_activities': recent_activities
     })
 
-def profile_view(request, pk):
-    user_profile = get_object_or_404(UserProfile, user__pk=pk)
-    recent_rooms = Room.objects.filter(created_by=user_profile.user).order_by('-created_at')[:5]  # Last 5 rooms
-    recent_posts = Post.objects.filter(author=user_profile.user).order_by('-created_at')[:10]
-    recent_comments = Comment.objects.filter(author=user_profile.user).order_by('-created_at')[:10]
+@login_required
+def profile_view(request):
+    user = request.user
+    recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]  # Last 5 rooms
+    recent_posts = Post.objects.filter(author=user).order_by('-created_at')[:10]
+    recent_comments = Comment.objects.filter(author=user).order_by('-created_at')[:10]
     
     # Combine posts and comments, then sort by created_at to get the 10 most recent activities
     recent_activities = sorted(
@@ -62,7 +63,7 @@ def profile_view(request, pk):
     )[:10]
 
     context = {
-        'user_profile': user_profile,
+        'user': user,
         'recent_rooms': recent_rooms,
         'recent_activities': recent_activities,
     }

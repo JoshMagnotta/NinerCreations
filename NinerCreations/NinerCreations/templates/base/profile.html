@@ -11,8 +11,9 @@
             <ul>
             {% for room in recent_rooms %}
                 <li>
-                    <strong>{{ room.name }}</strong> - Created on {{ room.created_at|date:"M d, Y" }}
-                    <p>{{ room.description }}</p>
+                    <h3>{{ room.title }}</h3>
+                    <p>{{ room.content }}</p>
+                    <small>Created on {{ room.created_at|date:"M d, Y" }}</small>
                 </li>
             {% endfor %}
             </ul>
@@ -23,48 +24,24 @@
 
     <h2>Recent Activities</h2>
     <div class="recent-activities">
-        {{ recent_activities|length }}
-        {{ activity.author.username }}
-        {{ user.username }}
         {% if recent_activities %}
-        <ul>
-        {% for activity in recent_activities %}
-            <!-- {% if activity.user == user_profile.user %}
+            <ul>
+            {% for activity in recent_activities %}
                 <li>
-                    {% if activity.post %}
-                        <strong>{{ activity.post.title }}</strong>
-                    {% elif activity.comment %}
-                        <strong>{{ activity.comment.content|truncatewords:10 }}</strong>
+                    {% if activity.activity_type == "Post" %}
+                        <strong>Post: {{ activity.title }}</strong>
+                    {% elif activity.activity_type == "Comment" %}
+                        <strong>Comment: {{ activity.content|truncatewords:10 }}</strong>
                     {% endif %}
                     <div>
-                        {{ activity.timestamp|date:"M d, Y H:i" }} - {{ activity.get_action_display }}
-                        {% if activity.room %}
-                            in room <strong>{{ activity.room.name }}</strong>
-                        {% elif activity.post %}
-                            on post <strong>{{ activity.post.title }}</strong>
-                        {% endif %}
+                        {{ activity.created_at|date:"M d, Y H:i" }}
                     </div>
                 </li>
-            {% endif %} -->
-            <li>
-                {% if activity.action == 'CREATED_POST' %}
-                    <strong>{{ activity.post.title }}</strong>
-                    <div>
-                        {{ activity.timestamp|date:"M d, Y H:i" }} - Created a post
-                    </div>
-                {% elif activity.action == 'COMMENTED' %}
-                    <strong>{{ activity.comment.content|truncatewords:10 }}</strong>
-                    <div>
-                        {{ activity.timestamp|date:"M d, Y H:i" }} - Commented on post <strong>{{ activity.post.title }}</strong>
-                    </div>
-                {% endif %}
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No recent activities.</p>
-    {% endif %}
-    
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No recent activities.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

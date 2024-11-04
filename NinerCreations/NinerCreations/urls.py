@@ -22,7 +22,7 @@ from .views import profile_view
 urlpatterns = [
     path('', views.home_view, name='home'),
     path('post/<int:post_id>/', views.post_detail, name='post_detail'),  # New URL pattern for post detail
-    path('profile/', views.profile, name='profile'),
+    path('profile/', views.profile_view, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('login/', views.login, name='login'),
     path('admin/', admin.site.urls, name='admin'),
