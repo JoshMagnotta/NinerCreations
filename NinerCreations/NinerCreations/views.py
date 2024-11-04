@@ -5,11 +5,30 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from .models import Post, Activity
+from django.shortcuts import render, get_object_or_404
+from .models import Post, Comment
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .registerform import RegisterForm
 
 def post_detail(request, post_id):
-    # Retrieve the specific post using the provided post_id
     post = get_object_or_404(Post, id=post_id)
-    return render(request, 'base/post_detail.html', {'post': post})
+    comments = post.comments.all().order_by('-created_at')  # Fetch comments associated with the post
+
+    if request.method == 'POST':
+        content = request.POST.get('content')  # Get the comment content from the form
+
+        if content:
+            author = request.user if request.user.is_authenticated else None
+            Comment.objects.create(post=post, author=author, content=content)
+            # After adding the comment, fetch comments again to include the new one
+            comments = post.comments.all().order_by('-created_at')
+
+    # Render the post detail page with the post and comments
+    return render(request, 'base/post_detail.html', {
+        'post': post,
+        'comments': comments,
+    })
 
 # @login_required
 def recent_activity_view(request):
@@ -124,3 +143,15 @@ def settings(request):
 def login(request):
     return render(request, 'base/login.html')
 
+#Register account stuff
+def register(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}!')
+            return redirect('login')  # Redirect to the login page after registration
+    else:
+        form = RegisterForm()
+    return render(request, 'base/register.html', {'form': form})
