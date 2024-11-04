@@ -7,28 +7,21 @@ from .models import Post, Comment
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
+    comments = post.comments.all().order_by('-created_at')  # Fetch comments associated with the post
 
     if request.method == 'POST':
         content = request.POST.get('content')  # Get the comment content from the form
 
         if content:
             author = request.user if request.user.is_authenticated else None
+            Comment.objects.create(post=post, author=author, content=content)
+            # After adding the comment, fetch comments again to include the new one
+            comments = post.comments.all().order_by('-created_at')
 
-            Comment.objects.create(
-                post=post,
-                author=author,
-                content=content
-            )
-            # Render the post detail page with the new comment
-            return render(request, 'base/post_detail.html', {
-                'post': post,
-                'success_message': "Comment added successfully!"  # Pass a success message to the template
-            })
-
-    # If not a POST request or if comment was not added, render the post detail page
+    # Render the post detail page with the post and comments
     return render(request, 'base/post_detail.html', {
         'post': post,
-        'error_message': "Failed to add comment."  # Pass an error message to the template
+        'comments': comments,
     })
 
 # @login_required
