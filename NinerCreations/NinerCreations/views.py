@@ -4,6 +4,9 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from .models import Post, Comment
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .registerform import RegisterForm
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -75,3 +78,15 @@ def settings(request):
 def login(request):
     return render(request, 'base/login.html')
 
+#Register account stuff
+def register(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}!')
+            return redirect('login')  # Redirect to the login page after registration
+    else:
+        form = RegisterForm()
+    return render(request, 'base/register.html', {'form': form})
