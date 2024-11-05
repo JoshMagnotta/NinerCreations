@@ -11,6 +11,12 @@
     <div class="wrapper">
         <!-- Header -->
         {% include "base/header.html" %}
+
+        <!-- Navigation Links for Register and Login -->
+        <nav>
+            <a href="{% url 'register' %}">Register</a>
+            <a href="{% url 'login' %}">Login</a>
+        </nav>
         
         <!-- Main content area -->
         <div class="content">

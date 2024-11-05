@@ -1,14 +1,59 @@
 {% extends "base/base.html" %}
 
 {% block content %}
-<div class="post-detail">
-    <h2>{{ post.title }}</h2>
-    <p class="post-meta">
-        <em>by {{ post.author.username }}</em> - {{ post.created_at|date:"M d, Y H:i" }}
-    </p>
-    <div class="post-content">
-        {{ post.content }}
+<div class="content-grid">
+    <!-- Top Container for Post Details -->
+    <a class="btn btn-primary" href="{% url 'home' %}">← Back to Home</a>
+    <div class="pd-main">
+        <div class="post-detail">
+            <h2>{{ post.title }}</h2>
+            <p class="post-meta">
+                <em>by {{ post.author.username }}</em> - {{ post.created_at|date:"M d, Y H:i" }}
+            </p>
+            <div class="post-content">
+                {{ post.content }}
+            </div>
+        </div>
     </div>
-    <a href="{% url 'home' %}">← Back to Home</a>
+
+    <!-- Active Members Column -->
+    <div class="pd-left">
+        <h3>Active Members</h3>
+        <p>Placeholder for active members list</p>
+    </div>
+
+    <!-- Main Content Column (Comment Section) -->
+    <div class="pd-main-content">
+        <div class="comment-section">
+            <h3>Comments</h3>
+
+            <!-- Comment Form (moved to the top) -->
+            <form method="POST" action="{% url 'post_detail' post.id %}" class="comment-form">
+                {% csrf_token %}
+                <textarea name="content" rows="4" placeholder="Write a comment..." required class="comment-input"></textarea>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+            <ul id="commentList" class="comment-list">
+                {% for comment in comments %}
+                    <li class="comment">
+                        <div class="comment-header">
+                            <strong class="comment-author">{{ comment.author.username|default:"Guest" }}</strong>
+                            <span class="comment-timestamp">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                        <div class="comment-content">
+                            {{ comment.content }}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Recent Activity Column -->
+    <div class="pd-right">
+        <h3>Recent Activity</h3>
+        <p>Placeholder for recent activity list</p>
+    </div>
 </div>
 {% endblock %}
