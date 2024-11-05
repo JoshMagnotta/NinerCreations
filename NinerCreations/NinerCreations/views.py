@@ -1,5 +1,7 @@
-from .models import Post, Comment
+# views.py
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from .models import Post, Comment
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
@@ -29,8 +31,7 @@ def post_detail(request, post_id):
         'post': post,
         'comments': comments,
     })
-
-# @login_required
+    
 def recent_activity_view(request):
     # Query for the 10 most recent posts and comments
     recent_posts = Post.objects.all().order_by('-created_at')[:10]
@@ -130,6 +131,16 @@ def create_post(request):
         return redirect('profile', pk=request.user.pk)
     
     return render(request, 'posts/create_post.html')
+def search(request):
+    query = request.GET.get('q', '')
+    if query:
+        # Search by title OR description using Q objects
+        posts = Post.objects.filter(
+            Q(title__icontains=query) | Q(content__icontains=query)
+        )
+    else:
+        posts = Post.objects.none()
+    return render(request, 'base/search_results.html', {'posts': posts, 'query': query})
 
 def home(request):
     return render(request, 'base/home.html')
