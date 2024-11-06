@@ -48,9 +48,22 @@ def recent_activity_view(request):
         'recent_activities': recent_activities
     })
 
+# views.py
+from django.shortcuts import render, get_object_or_404
+from .models import Post, Comment, Topic
+
+# views.py
+
 def home_view(request):
-    # Retrieve all posts ordered by creation date (newest first)
-    posts = Post.objects.all().order_by('-created_at')
+    # Retrieve the topic filter from the URL parameters
+    topic_id = request.GET.get('topic')
+
+    if topic_id:
+        # Filter posts by the selected topic
+        posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at')
+    else:
+        # If no topic is selected, retrieve all posts
+        posts = Post.objects.all().order_by('-created_at')
     
     # Retrieve the 10 most recent posts and comments
     recent_posts = Post.objects.all().order_by('-created_at')[:10]
@@ -63,11 +76,18 @@ def home_view(request):
         reverse=True
     )[:10]
 
-    # Pass both posts and recent_activities to the template
+    # Retrieve all topics for the "Browse Topics" section
+    topics = Topic.objects.all()
+
+    # Pass the posts, recent activities, and topics to the template
     return render(request, 'base/home.html', {
         'posts': posts,
-        'recent_activities': recent_activities
+        'recent_activities': recent_activities,
+        'topics': topics
     })
+
+
+
 
 @login_required
 def profile_view(request):

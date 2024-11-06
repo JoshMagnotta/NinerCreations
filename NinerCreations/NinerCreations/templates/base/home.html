@@ -5,7 +5,18 @@
     <!-- Left Sidebar -->
     <aside class="sidebar-left">
         <h2>Browse Topics</h2>
-        <!-- Additional dynamic topic content can go here -->
+        <ul>
+            <li>
+                <a href="{% url 'home' %}" class="{% if not request.GET.topic %}active{% endif %}">All</a>
+            </li>
+            {% for topic in topics %}
+                <li>
+                    <a href="{% url 'home' %}?topic={{ topic.id }}" class="{% if request.GET.topic == topic.id|stringformat:"s" %}active{% endif %}">
+                        {{ topic.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
     </aside>
 
     <!-- Main Content Area -->
@@ -17,16 +28,23 @@
                     <div class="post-item">
                         <h3>{{ post.title }}</h3>
                         <p>{{ post.content|truncatewords:20 }}</p> <!-- Truncate content to first 20 words -->
+                        <!-- Display Tags -->
+                        <div class="post-tags">
+                            {% for topic in post.topics.all %}
+                                <span class="tag">{{ topic.name }}</span>
+                            {% endfor %}
+                        </div>
                         <p class="post-meta">
                             <em>by {{ post.author.username }}</em> - {{ post.created_at|date:"M d, Y H:i" }}
                         </p>
+                        
+                        
                     </div>
                 </a>
             {% empty %}
                 <p>No posts available.</p>
             {% endfor %}
         </div>
-        
     </main>
 
     <!-- Right Sidebar (Recent Activity) -->

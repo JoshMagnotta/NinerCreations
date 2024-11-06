@@ -751,3 +751,57 @@ a:hover {
     margin-top: 10px;
     font-size: 14px;
 }
+
+/* Browse Topics Section */
+.sidebar-left ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-left ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar-left ul li a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #1A3D31; /* Theme color */
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+    background-color: #f0f4f7; /* Light background to match the sidebar */
+}
+
+.sidebar-left ul li a:hover {
+    background-color: #c1e1c1; /* Slightly darker on hover */
+    color: #FFFFFF; /* White text on hover */
+}
+
+.sidebar-left ul li a.active {
+    background-color: #1A3D31; /* Active topic color to match theme */
+    color: #FFFFFF;
+}
+
+/* Responsive adjustments for Browse Topics */
+@media (max-width: 768px) {
+    .sidebar-left ul li a {
+        padding: 8px; /* Smaller padding on mobile */
+        font-size: 0.9rem;
+    }
+}
+
+.post-tags {
+    margin-top: 10px;
+}
+
+.post-tags .tag {
+    display: inline-block;
+    background-color: #1A3D31; /* Theme color */
+    color: #FFFFFF;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    border-radius: 15px;
+    margin-right: 5px;
+}
