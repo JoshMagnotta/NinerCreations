@@ -12,6 +12,8 @@ from .models import Post, Comment
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .registerform import RegisterForm
+from django.http import HttpResponseBadRequest
+
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -55,16 +57,19 @@ from .models import Post, Comment, Topic
 # views.py
 
 def home_view(request):
-    # Retrieve the topic filter from the URL parameters
     topic_id = request.GET.get('topic')
 
+    # Validate topic_id to ensure it's an integer
     if topic_id:
-        # Filter posts by the selected topic
-        posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at')
-    else:
-        # If no topic is selected, retrieve all posts
-        posts = Post.objects.all().order_by('-created_at')
-    
+        try:
+            topic_id = int(topic_id)
+        except ValueError:
+            # If topic_id is not a valid integer, return the custom error page
+            return render(request, '400.html', status=400)
+
+    # If a valid topic_id is provided, filter by topic, else show all posts
+    posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at') if topic_id else Post.objects.all().order_by('-created_at')
+
     # Retrieve the 10 most recent posts and comments
     recent_posts = Post.objects.all().order_by('-created_at')[:10]
     recent_comments = Comment.objects.all().order_by('-created_at')[:10]
@@ -186,3 +191,7 @@ def register(request):
     else:
         form = RegisterForm()
     return render(request, 'base/register.html', {'form': form})
+
+def handle_invalid_topic_id(request, exception):
+    # Render the custom 400 error page
+    return render(request, '400.html', status=400)

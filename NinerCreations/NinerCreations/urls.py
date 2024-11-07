@@ -20,6 +20,7 @@ from . import views
 from .views import profile_view
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import views as auth_views
+from django.conf.urls import handler400
 
 
 urlpatterns = [
@@ -32,6 +33,5 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('profile/<int:pk>/', views.user_profile_view, name='user_profile'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Add this line
-
-
 ]
+handler400 = 'NinerCreations.views.handle_invalid_topic_id'
