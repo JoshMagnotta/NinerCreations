@@ -46,5 +46,21 @@
     {% else %}
         <p>No recent activities.</p>
     {% endif %}
+    <!-- end activities and rooms -->
+
+    <h2>Completed Projects</h2>
+    {% if projects %}
+        <ul>
+            {% for project in projects %}
+                <li>
+                    <h3>{{ project.name }}</h3>
+                    <p>{{ project.description }}</p>
+                    <a href="{{ project.github_link }}" target="_blank">View on GitHub</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No projects added yet.</p>
+    {% endif %}
 </div>
 {% endblock %}

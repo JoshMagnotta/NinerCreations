@@ -49,3 +49,10 @@ class Activity(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.get_action_display()} on {self.timestamp}"
+
+class Project(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    github_link = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
