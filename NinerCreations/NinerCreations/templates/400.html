@@ -1,0 +1,49 @@
+<!-- templates/400.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oops! Something Went Wrong</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1A3D31;
+            color: #FFFFFF;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 1em;
+        }
+        a {
+            background-color: #ffffff;
+            color: #1A3D31;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        a:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Oops! You shouldn't have done that 😅</h1>
+    <h2>You tried, but failed. (or we failed) </h2>
+    <p>It looks like the URL you entered isn't quite right. Let's get you back on track.</p>
+    <a href="{% url 'home' %}">Go Back to Home</a>
+</body>
+</html>

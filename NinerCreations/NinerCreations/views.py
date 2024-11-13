@@ -12,6 +12,8 @@ from .models import Post, Comment
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .registerform import RegisterForm
+from django.http import HttpResponseBadRequest
+
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -48,10 +50,26 @@ def recent_activity_view(request):
         'recent_activities': recent_activities
     })
 
+# views.py
+from django.shortcuts import render, get_object_or_404
+from .models import Post, Comment, Topic
+
+# views.py
+
 def home_view(request):
-    # Retrieve all posts ordered by creation date (newest first)
-    posts = Post.objects.all().order_by('-created_at')
-    
+    topic_id = request.GET.get('topic')
+
+    # Validate topic_id to ensure it's an integer
+    if topic_id:
+        try:
+            topic_id = int(topic_id)
+        except ValueError:
+            # If topic_id is not a valid integer, return the custom error page
+            return render(request, '400.html', status=400)
+
+    # If a valid topic_id is provided, filter by topic, else show all posts
+    posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at') if topic_id else Post.objects.all().order_by('-created_at')
+
     # Retrieve the 10 most recent posts and comments
     recent_posts = Post.objects.all().order_by('-created_at')[:10]
     recent_comments = Comment.objects.all().order_by('-created_at')[:10]
@@ -63,11 +81,18 @@ def home_view(request):
         reverse=True
     )[:10]
 
-    # Pass both posts and recent_activities to the template
+    # Retrieve all topics for the "Browse Topics" section
+    topics = Topic.objects.all()
+
+    # Pass the posts, recent activities, and topics to the template
     return render(request, 'base/home.html', {
         'posts': posts,
-        'recent_activities': recent_activities
+        'recent_activities': recent_activities,
+        'topics': topics
     })
+
+
+
 
 @login_required
 def profile_view(request):
@@ -166,3 +191,7 @@ def register(request):
     else:
         form = RegisterForm()
     return render(request, 'base/register.html', {'form': form})
+
+def handle_invalid_topic_id(request, exception):
+    # Render the custom 400 error page
+    return render(request, '400.html', status=400)
