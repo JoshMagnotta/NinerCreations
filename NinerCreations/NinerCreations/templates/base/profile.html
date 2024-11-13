@@ -1,3 +1,4 @@
+<!-- templates/base/profile.html -->
 {% extends "base/base.html" %}
 
 {% block content %}
@@ -46,5 +47,11 @@
     {% else %}
         <p>No recent activities.</p>
     {% endif %}
+    <div class="edit-delete">
+        <a href="/settings" style="text-decoration: none;">
+        <p>✏️ Edit/Delete Profile</p>
+        </a>
+    </div>
 </div>
+
 {% endblock %}
