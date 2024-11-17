@@ -1,4 +1,5 @@
 # views.py
+import re
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from .models import Post, Comment
@@ -14,6 +15,7 @@ from django.contrib import messages
 from .registerform import RegisterForm
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
+from django.core.exceptions import ValidationError
 
 
 def post_detail(request, post_id):
@@ -134,12 +136,15 @@ def user_profile_view(request, pk):
         key=lambda x: x.created_at,
         reverse=True
     )[:10]
+    # Fetch the completed projects for this user
+    projects = Project.objects.filter(user=user).order_by('-created_at')  # Adjust ordering if needed
 
     # Pass data to the template
     context = {
         'user': user,
         'recent_rooms': recent_rooms,
         'recent_activities': recent_activities,
+        'projects': projects,
     }
     return render(request, 'base/user_profile.html', context)
 
@@ -199,13 +204,27 @@ def handle_invalid_topic_id(request, exception):
     # Render the custom 400 error page
     return render(request, '400.html', status=400)
 
+def is_valid_github_url(url):
+    # Match common GitHub URL patterns
+    github_url_pattern = re.compile(
+        r'^https://github\.com/[\w-]+/[\w-]+$'
+    )
+    return bool(github_url_pattern.match(url))
+
 def add_project(request):
     if request.method == 'POST':
         name = request.POST.get('project_name')
         description = request.POST.get('project_description')
         link = request.POST.get('project_link')
+
+        # Validate GitHub link
+        if not is_valid_github_url(link):
+            messages.error(request, "Please provide a valid GitHub repository URL.")
+            return redirect('profile')  # Redirect back to profile with an error message
+
         Project.objects.create(user=request.user, name=name, description=description, github_link=link)
-        return redirect('profile')  # Redirect back to the profile page
+        messages.success(request, "Project added successfully!")
+        return redirect('profile')
     return render(request, 'profile.html')
 
 @login_required
