@@ -929,3 +929,18 @@ a:hover {
     text-align: center;
     margin-top: 20px;
 }
+
+.profile-delete-edit-btn {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    right: 0;
+    width: 100%;
+}
+
+.profile-delete-edit-btn button {
+    align-items: top;
+    padding: 10px;
+    margin-top: 3px;
+    
+}

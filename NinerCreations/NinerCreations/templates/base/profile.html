@@ -69,7 +69,7 @@
                 </div>
     
                 <div class="form-group">
-                    <label for="project-link">GitHub Link:</label>
+                    <label for="project-link">Project Link:</label>
                     <input type="url" id="project-link" name="project_link" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
                 </div>
             
@@ -79,26 +79,55 @@
 
         <!-- Display Existing Projects -->
         {% if projects %}
-            <ul class="projects-list">
-                {% for project in projects %}
-                    <li class="project-item" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; position: relative;">
-                        <h3 class="project-title" style="font-size: 20px; font-weight: bold; color:#1A3D31; margin-bottom: 10px;">{{ project.name }}</h3>
-                        <p class="project-description" style="font-size: 16px; text-align: left; margin-bottom: 10px;">{{ project.description }}</p>
-                        <a  class="project-link" href="{{ project.github_link }}" target="_blank" style="text-decoration: none; font-size: 20px;">View Project on GitHub</a>
-                        <!-- start delete -->
-                        <form action="{% url 'delete_project' project.id %}" method="post" style="position: absolute; bottom: 10px; right: 10px;" class="delete-project-form">
+        <ul class="projects-list">
+            {% for project in projects %}
+                <li class="project-item" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; position: relative;">
+                    <h3 class="project-title" style="font-size: 20px; font-weight: bold; color:#1A3D31; margin-bottom: 10px;">{{ project.name }}</h3>
+                    <p class="project-description" style="font-size: 16px; text-align: left; margin-bottom: 10px;">{{ project.description }}</p>
+                    <a class="project-link" href="{{ project.github_link }}" target="_blank" style="text-decoration: none; font-size: 16px;"><b>View Project Here</b></a>
+
+
+                    <!-- Edit Form (Initially Hidden) -->
+                    <div id="edit-form-{{ project.id }}" class="edit-project-form" style="display: none; margin-top: 20px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); width: 100%;">
+                        <form method="POST" action="{% url 'edit_project' project.id %}">
                             {% csrf_token %}
-                            <button type="submit" class="delete-btn" style="background-color: #1A3D31; color: #fff; border: none; border-radius: 5px; padding: 5px 5px; font-size: 14px; display: block; margin: 5px 5px; cursor: pointer; margin-bottom: 10px;" onclick="return confirm('Are you sure you want to delete this project?');">
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label for="edit-project-name-{{ project.id }}" style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Project Name:</label>
+                                <input type="text" id="edit-project-name-{{ project.id }}" name="project_name" value="{{ project.name }}" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-project-description-{{ project.id }}" style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Project Description:</label>
+                                <textarea id="edit-project-description-{{ project.id }}" name="project_description" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">{{ project.description }}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-project-link-{{ project.id }}" style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Project Link:</label>
+                                <input type="url" id="edit-project-link-{{ project.id }}" name="project_link" value="{{ project.github_link }}" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+                            </div>
+                
+                            <button type="submit" style="background-color: #1A3D31; color: #fff; border: none; border-radius: 5px; padding: 5px 10px; font-size: 14px; cursor: pointer;">Save Changes</button>
+                        </form>
+                    </div>
+
+                    <div class="profile-delete-edit-btn">
+                        <button class="edit-project-btn" onclick="toggleEditForm('{{ project.id }}')" style="background-color: #1A3D31; color: #fff; border: none; border-radius: 5px; font-size: 14px; cursor: pointer; "><b>Edit</b></button>
+                        <!-- Delete Form -->
+                        <form action="{% url 'delete_project' project.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn" style="background-color: #1A3D31; color: #fff; border: none; border-radius: 5px; font-size: 14px; cursor: pointer;" onclick="return confirm('Are you sure you want to delete this project?');">
                                 Delete
                             </button>
                         </form>
-                        <!-- end delete -->
-                    </li>
-                {% endfor %}
-            </ul>
+                    </div>
+
+                </li>
+            {% endfor %}
+        </ul>
         {% else %}
-            <p class="no-projects-msg">No projects added yet.</p>
+        <p class="no-projects-msg">No projects added yet.</p>
         {% endif %}
+
     </div>
     <!-- start edit/delete profile -->
     <div class="edit-delete">
@@ -117,12 +146,19 @@
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     }
 
+    function toggleEditForm(projectId) {
+        const editForm = document.getElementById(`edit-form-${projectId}`);
+        editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
+    }
+
+
     function validateGitHubLink(event) {
-        const githubUrlPattern = /^https:\/\/(www\.)?github\.com\/[\w\-]+(\/[\w\-]+)?$/;
+        // General URL validation pattern
+        const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9\-_]+\.)+[a-zA-Z]{2,}(:\d+)?(\/.*)?$/;
         const projectLink = document.getElementById('project-link').value;
 
-        if (!githubUrlPattern.test(projectLink)) {
-            alert('Please enter a valid GitHub URL.');
+        if (!urlPattern.test(projectLink)) {
+            alert('Please enter a valid URL.');
             event.preventDefault(); // Prevent the form from being submitted
         }
     }
