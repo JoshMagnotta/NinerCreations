@@ -398,7 +398,7 @@ a:hover {
 .post-actions .btn-warning {
     background-color: #17c24a; /* Green background for Edit button */
     color: #fff;
-    border: 1px solid #000000;
+    border: none;
     transition: background-color 0.3s ease;
 }
 
@@ -409,7 +409,7 @@ a:hover {
 .post-actions .btn-danger {
     background-color: #dc3545; /* Red background for Delete button */
     color: #fff;
-    border: 1px solid #000000;
+    border: none;
     transition: background-color 0.3s ease;
 }
 
@@ -421,14 +421,14 @@ a:hover {
 .btn-add-post {
     display: inline-block;              /* Make it behave like a button */
     padding: 10px 20px;                 /* Add padding for button-like appearance */
-    background-color: #28a745;          /* Green background color (can be customized) */
+    background-color: #1A3D31;          /* Green background color (can be customized) */
     color: white;                       /* Text color */
     font-size: 16px;                    /* Font size */
     font-weight: bold;                  /* Bold text */
     text-align: center;                 /* Center text */
     text-decoration: none;              /* Remove underline */
     border-radius: 5px;                 /* Rounded corners */
-    border: 2px solid #28a745;         /* Green border */
+    border: none;
     transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover effect */
 }
 
