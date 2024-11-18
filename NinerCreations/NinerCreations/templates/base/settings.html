@@ -1,7 +1,74 @@
-<!-- templates/base/settings.html -->
-{% extends "base/base.html" %}
+{% extends 'base/base.html' %}
 
 {% block content %}
-<h1>Settings Page</h1>
-<p>This is the settings page content.</p>
+<div class="container">
+    <h2>Settings Page</h2>
+    
+    <!-- Include enctype to allow file uploads -->
+    <form method="POST" enctype="multipart/form-data" action="{% url 'settings' %}">
+        {% csrf_token %}
+
+        <!-- Bio Section -->
+        <div class="form-group">
+            <label for="bio">Bio:</label>
+            <div class="input-container">
+                <textarea id="bio" name="bio" rows="5" style="resize: none;">{{ user.profile.bio }}</textarea>
+            </div>
+        </div>
+
+        <!-- Profile Picture Section -->
+        <div class="form-group">
+            <label for="profile_picture">Profile Picture:</label>
+            <div class="input-container">
+                <input type="file" id="profile_picture" name="profile_picture">
+            </div>
+            {% if user.profile.profile_picture %}
+            <div class="profile-picture-preview" style="margin-top: 10px;">
+                <img src="{{ user.profile.profile_picture.url }}" alt="Current Profile Picture" style="width: 100px; height: 100px; border-radius: 50%;">
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Email Section -->
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <div class="input-container">
+                <input type="email" id="email" name="email" value="{{ user.email }}">
+            </div>
+        </div>
+
+        <!-- Username Section -->
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <div class="input-container">
+                <input type="text" id="username" name="username" value="{{ user.username }}">
+            </div>
+        </div>
+
+        <!-- Password Section -->
+        <div class="form-group">
+            <label for="password">New Password:</label>
+            <div class="input-container">
+                <input type="password" id="password" name="password">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="confirm_password">Confirm New Password:</label>
+            <div class="input-container">
+                <input type="password" id="confirm_password" name="confirm_password">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Save Changes</button>
+    </form>
+
+    <!-- Spacing -->
+    <div style="margin-top: 20px;">
+        <!-- Delete Account Section -->
+        <form method="POST" action="{% url 'delete_account' %}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger">Delete Account</button>
+        </form>
+    </div>
+</div>
 {% endblock %}

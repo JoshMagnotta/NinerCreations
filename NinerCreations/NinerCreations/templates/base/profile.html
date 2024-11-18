@@ -1,17 +1,31 @@
 {% extends "base/base.html" %}
+{% load static %} <!-- Make sure this is included -->
 
 {% block content %}
 <div class="profile-page-container">
+
+    <!-- Profile Picture Section -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%; border: 2px solid #1A3D31;">
+        {% else %}
+            <img src="{% static 'images/profile-placeholder.png' %}" alt="Default Profile Picture" style="width: 150px; height: 150px; border-radius: 50%; border: 2px solid #1A3D31;">
+        {% endif %}
+    </div>
+
     <h1>{{ user.username }}'s Profile</h1>
     <p><strong>Name:</strong> {{ user.get_full_name }}</p> <!-- Full name if both first and last are set -->
     
+    <!-- Add Bio Section -->
+    <p><strong>Bio:</strong> {{ user.profile.bio }}</p>
+
     <h2>Created Rooms</h2>
     {% if recent_rooms %}
         <ul>
             {% for room in recent_rooms %}
                 <li>
-                    <a class ="profile-tags" style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' room.id %}">
-                    <h3>{{ room.title }}</h3>
+                    <a class="profile-tags" style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' room.id %}">
+                        <h3>{{ room.title }}</h3>
                     </a>
                     <p>{{ room.content }}</p>
                     <small>Created on {{ room.created_at|date:"M d, Y" }}</small>  
@@ -25,23 +39,22 @@
     <h2>Recent Activities</h2>
     {% if recent_activities %}
         <div>
-        <ul>
-            {% for activity in recent_activities %}
-                <li>
-                    {% if activity.activity_type == "Post" %}
-                    <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.id %}">
-                        Post: {{ activity.title }}
-                    </a>
-                    {% elif activity.activity_type == "Comment" %}
-                    <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.post.id %}">
-                        Comment: {{ activity.content }}
-                    </a>
-                    {% endif %}
+            <ul>
+                {% for activity in recent_activities %}
+                    <li>
+                        {% if activity.activity_type == "Post" %}
+                            <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.id %}">
+                                Post: {{ activity.title }}
+                            </a>
+                        {% elif activity.activity_type == "Comment" %}
+                            <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.post.id %}">
+                                Comment: {{ activity.content }}
+                            </a>
+                        {% endif %}
                         {{ activity.created_at|date:"M d, Y H:i" }}
-                    
-                </li>
-            {% endfor %}
-        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
     {% else %}
         <p>No recent activities.</p>

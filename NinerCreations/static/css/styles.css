@@ -106,9 +106,9 @@ html, body {
 
 /* Register Page Styling */
 .container {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #f5f5f5; /* Match the card background on the main page */
+    max-width: 600px; /* Match the width of the register page */
+    margin: 0 auto; /* Center the container */
+    background-color: #f5f5f5; /* Shared background color */
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -138,6 +138,7 @@ form input {
     margin-bottom: 15px;
     font-size: 16px;
 }
+
 
 form button {
     background-color: #2c3e50; /* Match button color with theme */
@@ -748,8 +749,8 @@ a:hover {
 
 .error-message {
     color: red;
-    margin-top: 10px;
     font-size: 14px;
+    margin-top: 5px;
 }
 
 /* Browse Topics Section */
@@ -804,4 +805,86 @@ a:hover {
     font-size: 0.9rem;
     border-radius: 15px;
     margin-right: 5px;
+}
+
+/* Settings Page Styling */
+.settings-page .button-container {
+    margin-top: 20%; /* Adjust to control spacing */
+    clear: both; /* Ensure it does not overlap with previous elements */
+    padding: 0 20px; /* Adjust padding if necessary */
+}
+
+/* Centered heading styling */
+.container h2 {
+    color: #2c3e50; /* Match the color scheme */
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Form field styles */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+/* Block layout for labels and input fields */
+.form-group label {
+    margin-bottom: 5px;
+    color: #2c3e50;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+
+/* Make input container a block element */
+.input-container {
+    display: block;
+    width: 100%;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%; /* Make it take full width of the container */
+    padding: 8px; /* Maintain padding */
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+.btn-danger {
+    display: inline-block;
+    background-color: #8B0000; /* Dark red */
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Consistent width */
+    text-align: center;
+}
+
+.btn-danger:hover {
+    background-color: #FF6347; /* Bright red on hover */
+    color: white;
+}
+
+
+/* Add spacing between buttons */
+.btn-danger {
+    margin-top: 20px;
+}
+
+
+.profile-picture-preview img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
 }
