@@ -20,6 +20,7 @@ from . import views
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls import handler400
 
 
 urlpatterns = [
@@ -46,3 +47,6 @@ urlpatterns = [
     ), name='password_change_done'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Add this line
+]
+handler400 = 'NinerCreations.views.handle_invalid_topic_id'
