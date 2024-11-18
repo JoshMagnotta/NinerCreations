@@ -19,12 +19,12 @@
 
     <!-- Edit Button for the owner of the post -->
     {% if request.user == post.author %}
-        <a href="{% url 'edit_post' post.id %}" class="btn btn-danger">Edit Post</a>
+        <a href="{% url 'edit_post' post.id %}" class="btn-edit-post">Edit Post</a>
         <!-- Clear Recent Activity Button for the post owner -->
         <form method="POST" action="{% url 'post_detail' post.id %}" style="display:inline;">
             {% csrf_token %}
-            <button type="submit" name="clear_activity" class="btn btn-danger">Clear Recent Activity</button>
-        </form>
+            <button type="submit" name="clear_activity" class="btn btn-danger btn-sm ml-3">Clear Recent Activity</button>
+        </form>        
     {% endif %}
 
 
