@@ -84,7 +84,7 @@
                     <li class="project-item" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; position: relative;">
                         <h3 class="project-title" style="font-size: 20px; font-weight: bold; color:#1A3D31; margin-bottom: 10px;">{{ project.name }}</h3>
                         <p class="project-description" style="font-size: 16px; text-align: left; margin-bottom: 10px;">{{ project.description }}</p>
-                        <a id="project-poop" class="project-link" href="{{ project.github_link }}" target="_blank" style="text-decoration: none; font-size: 20px;">View Project on GitHub</a>
+                        <a  class="project-link" href="{{ project.github_link }}" target="_blank" style="text-decoration: none; font-size: 20px;">View Project on GitHub</a>
                         <!-- start delete -->
                         <form action="{% url 'delete_project' project.id %}" method="post" style="position: absolute; bottom: 10px; right: 10px;" class="delete-project-form">
                             {% csrf_token %}
