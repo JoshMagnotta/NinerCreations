@@ -1,4 +1,5 @@
 # views.py
+import re
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from .models import Post, Comment
@@ -6,13 +7,15 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
-from .models import Post, Activity
+from .models import Post, Activity, Project
 from django.shortcuts import render, get_object_or_404
 from .models import Post, Comment
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .registerform import RegisterForm
 from django.http import HttpResponseBadRequest
+from django.http import HttpResponseForbidden
+from django.core.exceptions import ValidationError
 
 
 def post_detail(request, post_id):
@@ -100,6 +103,7 @@ def profile_view(request):
     recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]  # Last 5 rooms
     recent_posts = Post.objects.filter(author=user).order_by('-created_at')[:10]
     recent_comments = Comment.objects.filter(author=user).order_by('-created_at')[:10]
+    projects = Project.objects.filter(user=user)
     
     # Combine posts and comments, then sort by created_at to get the 10 most recent activities
     recent_activities = sorted(
@@ -112,6 +116,7 @@ def profile_view(request):
         'user': user,
         'recent_rooms': recent_rooms,
         'recent_activities': recent_activities,
+        'projects': projects,
     }
     return render(request, 'base/profile.html', context)
 
@@ -131,12 +136,15 @@ def user_profile_view(request, pk):
         key=lambda x: x.created_at,
         reverse=True
     )[:10]
+    # Fetch the completed projects for this user
+    projects = Project.objects.filter(user=user).order_by('-created_at')  # Adjust ordering if needed
 
     # Pass data to the template
     context = {
         'user': user,
         'recent_rooms': recent_rooms,
         'recent_activities': recent_activities,
+        'projects': projects,
     }
     return render(request, 'base/user_profile.html', context)
 
@@ -195,3 +203,72 @@ def register(request):
 def handle_invalid_topic_id(request, exception):
     # Render the custom 400 error page
     return render(request, '400.html', status=400)
+
+def is_valid_url(url):
+    # General URL validation regex
+    url_pattern = re.compile(
+        r'^(https?:\/\/)?'  # http:// or https://
+        r'([a-zA-Z0-9\-_]+\.)+[a-zA-Z]{2,}'  # Domain name
+        r'(:\d+)?(\/.*)?$'  # Optional port and path
+    )
+    return bool(url_pattern.match(url))
+
+def add_project(request):
+    if request.method == 'POST':
+        name = request.POST.get('project_name')
+        description = request.POST.get('project_description')
+        link = request.POST.get('project_link')
+
+        # Validate URL
+        if not is_valid_url(link):
+            messages.error(request, "Please provide a valid URL.")
+            return redirect('profile')  # Redirect back to profile with an error message
+
+        # Save the project to the database
+        Project.objects.create(user=request.user, name=name, description=description, github_link=link)
+        messages.success(request, "Project added successfully!")
+        return redirect('profile')
+
+    return render(request, 'profile.html')
+
+@login_required
+def delete_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    # Check if the project belongs to the logged-in user
+    if project.user != request.user:
+        return HttpResponseForbidden("You are not allowed to delete this project.")
+    
+    project.delete()
+    return redirect('profile')  # Redirect back to the profile page
+
+@login_required
+def edit_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    # Ensure only the owner can edit the project
+    if project.user != request.user:
+        return HttpResponseForbidden("You are not allowed to edit this project.")
+
+    if request.method == 'POST':
+        name = request.POST.get('project_name')
+        description = request.POST.get('project_description')
+        link = request.POST.get('project_link')
+
+        # Validate URL
+        if not is_valid_url(link):
+            messages.error(request, "Please provide a valid URL.")
+            return redirect('profile')  # Redirect back to profile with an error message
+
+        # Update project details
+        project.name = name
+        project.description = description
+        project.github_link = link
+        project.save()
+
+        messages.success(request, "Project updated successfully!")
+        return redirect('profile')
+
+    # Render an edit form if method is GET
+    context = {'project': project}
+    return render(request, 'base/edit_project.html', context)

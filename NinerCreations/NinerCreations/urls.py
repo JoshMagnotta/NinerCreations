@@ -33,5 +33,8 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('profile/<int:pk>/', views.user_profile_view, name='user_profile'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Add this line
+    path('add_project/', views.add_project, name='add_project'),
+    path('delete_project/<int:project_id>/', views.delete_project, name='delete_project'),
+     path('edit-project/<int:project_id>/', views.edit_project, name='edit_project'),
 ]
 handler400 = 'NinerCreations.views.handle_invalid_topic_id'
