@@ -4,6 +4,30 @@
 <div class="content-grid">
     <!-- Top Container for Post Details -->
     <a class="btn btn-primary" href="{% url 'home' %}">← Back to Home</a>
+
+    <!-- Join/Leave Button for non-owners -->
+    {% if request.user != post.author %}
+        <form method="POST" class="join-leave-form" style="display:inline;">
+            {% csrf_token %}
+            {% if request.user in post.members.all %}
+                <button type="submit" name="leave" class="btn btn-danger">Leave</button>
+            {% else %}
+                <button type="submit" name="join" class="btn btn-success">Join</button>
+            {% endif %}
+        </form>
+    {% endif %}
+
+    <!-- Edit Button for the owner of the post -->
+    {% if request.user == post.author %}
+        <a href="{% url 'edit_post' post.id %}" class="btn btn-danger">Edit Post</a>
+        <!-- Clear Recent Activity Button for the post owner -->
+        <form method="POST" action="{% url 'post_detail' post.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" name="clear_activity" class="btn btn-danger">Clear Recent Activity</button>
+        </form>
+    {% endif %}
+
+
     <div class="pd-main">
         <div class="post-detail">
             <h2>{{ post.title }}</h2>
@@ -19,7 +43,20 @@
     <!-- Active Members Column -->
     <div class="pd-left">
         <h3>Active Members</h3>
-        <p>Placeholder for active members list</p>
+        <ul class="active-members-list">
+            <!-- Display post owner first with inline styling for gold color -->
+            <li style="color: rgb(190, 164, 13); font-weight: bold;">
+                {{ post.author.username }}
+            </li>
+            <!-- Display other members in green color with inline styling -->
+            {% for member in members %}
+                <li style="color: green; font-weight: bold;">
+                    {{ member.username }}
+                </li>
+            {% empty %}
+                <li>No members have joined yet.</li>  <!-- If no members joined yet -->
+            {% endfor %}
+        </ul>
     </div>
 
     <!-- Main Content Column (Comment Section) -->
@@ -45,6 +82,13 @@
                             {{ comment.content }}
                         </div>
                     </li>
+                    <!-- Only show the delete button if the user is the comment's author or the post owner -->
+                    {% if request.user == comment.author or request.user == post.author %}
+                        <form method="POST" action="{% url 'delete_comment' post.pk comment.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    {% endif %}
                 {% endfor %}
             </ul>
         </div>
@@ -53,7 +97,27 @@
     <!-- Recent Activity Column -->
     <div class="pd-right">
         <h3>Recent Activity</h3>
-        <p>Placeholder for recent activity list</p>
+        <ul class="recent-activity-list">
+            {% for activity in recent_activities %}
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        {% if activity.action == 'JOINED_POST' %} ➕ {% elif activity.action == 'LEFT_POST' %} ➖ {% endif %}
+                    </div>
+                    <div class="activity-details">
+                        <strong>{{ activity.user.username }}</strong> 
+                        {% if activity.action == 'JOINED_POST' %}
+                            joined the post.
+                        {% elif activity.action == 'LEFT_POST' %}
+                            left the post.
+                        {% endif %}
+                        <br>
+                        <em>{{ activity.timestamp|date:"M d, Y H:i" }}</em>
+                    </div>
+                </li>
+            {% empty %}
+                <li>No recent activity.</li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
 {% endblock %}

@@ -381,6 +381,68 @@ a:hover {
     height: 60px; /* Fixed height for the textarea */
 }
 
+/* Edit and Delete Button Styles */
+.post-actions {
+    margin-top: 10px;
+}
+
+.post-actions .btn {
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.post-actions .btn-warning {
+    background-color: #17c24a; /* Yellow background for Edit button */
+    color: #fff;
+    border: 1px solid #000000;
+    transition: background-color 0.3s ease;
+}
+
+.post-actions .btn-warning:hover {
+    background-color: #0a6b1f; /* Darker yellow for hover effect */
+}
+
+.post-actions .btn-danger {
+    background-color: #dc3545; /* Red background for Delete button */
+    color: #fff;
+    border: 1px solid #dc3545;
+    transition: background-color 0.3s ease;
+}
+
+.post-actions .btn-danger:hover {
+    background-color: #c82333; /* Darker red for hover effect */
+}
+
+/* Style for Recent Activity section */
+.recent-activity-list {
+    list-style-type: none; /* Hide bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 0; /* Add padding to separate each item */
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.activity-item:last-child {
+    border-bottom: none; /* Remove bottom border for the last item */
+}
+
+.activity-icon {
+    font-size: 1.5rem;
+    margin-right: 8px;
+    color: #2d6a4f;
+    display: flex;
+    align-items: center;
+}
+
 .btn-primary {
     background-color: #1A3D31; /* Match your theme color */
     color: white;

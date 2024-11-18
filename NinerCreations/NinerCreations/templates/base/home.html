@@ -23,8 +23,13 @@
     <main class="main-content">
         <h2>Latest Posts</h2>
         <div class="posts-list">
+            <!-- Add Post Button at the top -->
+            <div class="add-post-button-container">
+                <a href="{% url 'create_post' %}" class="btn-add-post">+ Add Post</a>
+            </div>
+
             {% for post in posts %}
-                <a href="{% url 'post_detail' post.id %}" class="post-item-link">
+                <a href="{% url 'post_detail' post.pk %}" class="post-item-link">
                     <div class="post-item">
                         <h3>{{ post.title }}</h3>
                         <p>{{ post.content|truncatewords:20 }}</p> <!-- Truncate content to first 20 words -->
@@ -37,8 +42,13 @@
                         <p class="post-meta">
                             <em>by {{ post.author.username }}</em> - {{ post.created_at|date:"M d, Y H:i" }}
                         </p>
-                        
-                        
+                        <!-- Check if the user is the post creator -->
+                        {% if post.author == user %}
+                            <div class="post-actions">
+                                <a href="{% url 'edit_post' post.id %}" class="btn btn-warning">Edit</a>
+                                <a href="{% url 'delete_post' post.id %}" class="btn btn-danger">Delete</a>
+                            </div>
+                        {% endif %}
                     </div>
                 </a>
             {% empty %}

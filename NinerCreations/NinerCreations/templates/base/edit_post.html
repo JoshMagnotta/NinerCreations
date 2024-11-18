@@ -1,0 +1,37 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+    <div class="content-grid">
+        <div class="pd-main">
+            <div class="post-detail">
+                <h2>Edit Post</h2>
+                <form method="POST" class="edit-post-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="title">Title:</label>
+                        <input type="text" name="title" id="title" value="{{ post.title }}" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content">Content:</label>
+                        <textarea name="content" id="content" rows="4" required>{{ post.content }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="topics">Topics:</label>
+                        <select name="topics" id="topics" multiple>
+                            {% for topic in all_topics %}
+                                <option value="{{ topic.name }}" 
+                                    {% if topic in post.topics.all %} selected {% endif %}>
+                                    {{ topic.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update Post</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

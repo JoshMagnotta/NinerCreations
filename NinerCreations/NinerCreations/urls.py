@@ -25,7 +25,12 @@ from django.conf.urls import handler400
 
 urlpatterns = [
     path('', views.home_view, name='home'),
-    path('post/<int:post_id>/', views.post_detail, name='post_detail'),  # New URL pattern for post detail and comments
+    path('post/<int:pk>/', views.post_detail, name='post_detail'),  # New URL pattern for post detail and comments
+    path('create-post/', views.create_post, name='create_post'),
+    path('post/<int:pk>/edit/', views.edit_post, name='edit_post'),
+    path('post/<int:pk>/delete/', views.delete_post, name='delete_post'),
+    path('post/<int:pk>/', views.post_detail, name='post_detail'),  # New URL pattern for post detail and comments
+    path('post/<int:pk>/comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
     path('search/', views.search, name='search'),  # Added search URL
     path('profile/', views.profile_view, name='profile'),
     path('settings/', views.settings, name='settings'),

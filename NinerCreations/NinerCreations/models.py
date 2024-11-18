@@ -13,6 +13,7 @@ class Post(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     topics = models.ManyToManyField(Topic, related_name="posts", blank=True)
+    members = models.ManyToManyField(User, related_name="joined_posts", blank=True)
 
     def __str__(self):
         return self.title
