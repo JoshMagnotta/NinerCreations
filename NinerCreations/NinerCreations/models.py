@@ -55,7 +55,11 @@ class Activity(models.Model):
 class Profile(models.Model):
     # One-to-one relationship with the User model
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(max_length=500, blank=True)  # Bio field for user profile
+    bio = models.TextField(max_length=500, blank=True, null=True)  # Bio field for user profile
+    profile_picture = models.ImageField(
+        upload_to='profile_pictures/',
+        default='profile_pictures/default.png'
+    )  # Profile picture field
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
@@ -67,11 +71,3 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
     else:
         instance.profile.save()
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', default='profile_pictures/default.png')
-
-    def __str__(self):
-        return self.user.username

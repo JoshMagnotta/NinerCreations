@@ -45,8 +45,7 @@ urlpatterns = [
     path('settings/change_password_done/', PasswordChangeDoneView.as_view(
         template_name='base/change_password_done.html'
     ), name='password_change_done'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('logout/', LogoutView.as_view(), name='logout'),  # Add this line
 
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Add this line
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 handler400 = 'NinerCreations.views.handle_invalid_topic_id'
