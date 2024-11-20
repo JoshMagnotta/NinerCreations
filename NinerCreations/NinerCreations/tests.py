@@ -63,27 +63,33 @@ class SearchFunctionalityTestCase(TestCase):
         response = self.client.get(reverse('search'), {'q': ''})
         self.assertEqual(response.status_code, 200)
         self.assertQuerySetEqual(response.context['posts'], [])
-        
+
 class ProfilePageViewTestCase(TestCase):
     def setUp(self):
-        # Set up user and login
+        # Set up a user and login
         self.user = User.objects.create_user(username="testuser", password="password")
+        self.other_user = User.objects.create_user(username="otheruser", password="password")
         self.client.login(username="testuser", password="password")
 
-        # Create posts, comments, and projects for the user
+        # Create posts, comments, and projects for each user
         self.post = Post.objects.create(author=self.user, title="Test Post", content="Test Content")
         self.comment = Comment.objects.create(post=self.post, author=self.user, content="Test Comment")
         self.project = Project.objects.create(user=self.user, name="Test Project", description="Test Description", github_link="https://github.com/test/project")
 
+        # Other user's content
+        self.other_post = Post.objects.create(author=self.other_user, title="Other User Post", content="Other Content")
+        self.other_comment = Comment.objects.create(post=self.other_post, author=self.other_user, content="Other Comment")
+        self.other_project = Project.objects.create(user=self.other_user, name="Other User Project", description="Other Description", github_link="https://github.com/otheruser/project")
+
     def test_profile_view_access(self):
-        # Test that the profile page loads successfully
+        # Test that the profile page loads successfully for the logged-in user
         response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base/profile.html')
         self.assertContains(response, self.user.username)
 
     def test_user_profile_view_access(self):
-        # Test viewing a specific user's profile page
+        # Test viewing the logged-in user's profile page
         response = self.client.get(reverse('user_profile', args=[self.user.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base/user_profile.html')
@@ -91,3 +97,13 @@ class ProfilePageViewTestCase(TestCase):
         self.assertContains(response, self.post.title)
         self.assertContains(response, self.comment.content)
         self.assertContains(response, self.project.name)
+
+    def test_view_another_users_profile(self):
+        # Test viewing another user's profile page
+        response = self.client.get(reverse('user_profile', args=[self.other_user.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'base/user_profile.html')
+        self.assertContains(response, self.other_user.username)
+        self.assertContains(response, self.other_post.title)
+        self.assertContains(response, self.other_comment.content)
+        self.assertContains(response, self.other_project.name)
