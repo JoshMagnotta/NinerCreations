@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from .models import Post, Topic
+from .models import Post, Topic, Comment, Project
 
 class SearchFunctionalityTestCase(TestCase):
     def setUp(self):
@@ -63,3 +63,31 @@ class SearchFunctionalityTestCase(TestCase):
         response = self.client.get(reverse('search'), {'q': ''})
         self.assertEqual(response.status_code, 200)
         self.assertQuerySetEqual(response.context['posts'], [])
+        
+class ProfilePageViewTestCase(TestCase):
+    def setUp(self):
+        # Set up user and login
+        self.user = User.objects.create_user(username="testuser", password="password")
+        self.client.login(username="testuser", password="password")
+
+        # Create posts, comments, and projects for the user
+        self.post = Post.objects.create(author=self.user, title="Test Post", content="Test Content")
+        self.comment = Comment.objects.create(post=self.post, author=self.user, content="Test Comment")
+        self.project = Project.objects.create(user=self.user, name="Test Project", description="Test Description", github_link="https://github.com/test/project")
+
+    def test_profile_view_access(self):
+        # Test that the profile page loads successfully
+        response = self.client.get(reverse('profile'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'base/profile.html')
+        self.assertContains(response, self.user.username)
+
+    def test_user_profile_view_access(self):
+        # Test viewing a specific user's profile page
+        response = self.client.get(reverse('user_profile', args=[self.user.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'base/user_profile.html')
+        self.assertContains(response, self.user.username)
+        self.assertContains(response, self.post.title)
+        self.assertContains(response, self.comment.content)
+        self.assertContains(response, self.project.name)
