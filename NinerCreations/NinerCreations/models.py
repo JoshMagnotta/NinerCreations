@@ -8,12 +8,17 @@ class Topic(models.Model):
         return self.name
 
 class Post(models.Model):
+    PRIVACY_CHOICES = [
+        ('public', 'Public'),
+        ('private', 'Private'),
+    ]
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     topics = models.ManyToManyField(Topic, related_name="posts", blank=True)
     members = models.ManyToManyField(User, related_name="joined_posts", blank=True)
+    privacy = models.CharField(max_length=7, choices=PRIVACY_CHOICES, default='public')
 
     def __str__(self):
         return self.title

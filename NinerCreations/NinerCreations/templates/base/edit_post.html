@@ -30,6 +30,15 @@
                         <small>Select multiple topics by holding down Ctrl (or Command on Mac).</small>
                     </div>
 
+                    <!-- Privacy Field -->
+                    <div class="form-group">
+                        <label for="privacy">Privacy:</label>
+                        <select name="privacy" id="privacy" class="form-control">
+                            <option value="public" {% if post.privacy == "public" %}selected{% endif %}>Public</option>
+                            <option value="private" {% if post.privacy == "private" %}selected{% endif %}>Private</option>
+                        </select>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">Update Post</button>
                 </form>
             </div>

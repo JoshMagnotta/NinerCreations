@@ -134,6 +134,7 @@ def create_post(request):
         title = request.POST.get('title')
         content = request.POST.get('content')
         topic_ids = request.POST.getlist('topics')  # Get selected topics (multiple)
+        privacy = request.POST.get('privacy', 'public')
 
         # Ensure the user is logged in
         if not request.user.is_authenticated:
@@ -145,7 +146,8 @@ def create_post(request):
             post = Post.objects.create(
                 author=request.user,
                 title=title,
-                content=content
+                content=content,
+                privacy=privacy
             )
 
             # Add selected topics to the post
@@ -255,6 +257,7 @@ def edit_post(request, pk):
         title = request.POST.get('title')
         content = request.POST.get('content')
         topics = request.POST.getlist('topics')  # Get the selected topics (multiple)
+        privacy = request.POST.get('privacy', post.privacy)
 
         # Ensure the title and content are not empty
         if title and content:
