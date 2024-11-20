@@ -46,6 +46,9 @@ urlpatterns = [
         template_name='base/change_password_done.html'
     ), name='password_change_done'),
     path('logout/', LogoutView.as_view(), name='logout'),  # Add this line
+    path('add_project/', views.add_project, name='add_project'),
+    path('delete_project/<int:project_id>/', views.delete_project, name='delete_project'),
+     path('edit-project/<int:project_id>/', views.edit_project, name='edit_project'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 handler400 = 'NinerCreations.views.handle_invalid_topic_id'
