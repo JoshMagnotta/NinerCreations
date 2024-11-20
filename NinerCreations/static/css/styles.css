@@ -381,6 +381,108 @@ a:hover {
     height: 60px; /* Fixed height for the textarea */
 }
 
+/* Edit and Delete Button Styles */
+.post-actions {
+    margin-top: 10px;
+}
+
+.post-actions .btn {
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.post-actions .btn-warning {
+    background-color: #17c24a; /* Green background for Edit button */
+    color: #fff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.post-actions .btn-warning:hover {
+    background-color: #0a6b1f; /* Darker green for hover effect */
+}
+
+.post-actions .btn-danger {
+    background-color: #dc3545; /* Red background for Delete button */
+    color: #fff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.post-actions .btn-danger:hover {
+    background-color: #c82333; /* Darker red for hover effect */
+}
+
+/* Custom Button Style for "Add Post" */
+.btn-add-post {
+    display: inline-block;              /* Make it behave like a button */
+    padding: 10px 20px;                 /* Add padding for button-like appearance */
+    background-color: #1A3D31;          /* Green background color (can be customized) */
+    color: white;                       /* Text color */
+    font-size: 16px;                    /* Font size */
+    font-weight: bold;                  /* Bold text */
+    text-align: center;                 /* Center text */
+    text-decoration: none;              /* Remove underline */
+    border-radius: 5px;                 /* Rounded corners */
+    border: none;
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover effect */
+}
+
+.btn-add-post:hover {
+    background-color: #218838;          /* Darker green when hovered */
+    transform: scale(1.05);              /* Slightly grow the button on hover */
+}
+/* Custom Button Style for "Edit Post" */
+.btn-edit-post {
+    display: inline-block;              /* Make it behave like a button */
+    padding: 10px 15px;                 /* Matching padding (same as .btn-primary) */
+    background-color: #1A3D31;          /* Use the same background color as .btn-primary */
+    color: white;                       /* Text color */
+    font-size: 16px;                    /* Font size */
+    font-weight: bold;                  /* Bold text */
+    text-align: center;                 /* Center text */
+    text-decoration: none;              /* Remove underline */
+    border-radius: 8px;                 /* Rounded corners (same as .btn-primary) */
+    border: none;                       /* No border */
+    cursor: pointer;                   /* Cursor as pointer */
+    transition: background-color 0.3s;  /* Smooth background color transition on hover */
+    width: auto;                        /* Make sure it fits the content size */
+    max-width: 150px;                   /* Optionally limit the max width to prevent it from getting too wide */
+}
+
+.btn-edit-post:hover {
+    background-color: #2a6651;          /* Darker shade on hover (same as .btn-primary) */
+}
+/* Style for Recent Activity section */
+.recent-activity-list {
+    list-style-type: none; /* Hide bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 0; /* Add padding to separate each item */
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.activity-item:last-child {
+    border-bottom: none; /* Remove bottom border for the last item */
+}
+
+.activity-icon {
+    font-size: 1.5rem;
+    margin-right: 8px;
+    color: #2d6a4f;
+    display: flex;
+    align-items: center;
+}
+
 .btn-primary {
     background-color: #1A3D31; /* Match your theme color */
     color: white;
@@ -388,7 +490,8 @@ a:hover {
     border-radius: 8px; /* Rounded edges */
     padding: 10px 15px;
     cursor: pointer;
-    margin-top: 10px; /* Spacing between textarea and button */
+    text-decoration: none; 
+    /*margin-top: 10px; /* Spacing between textarea and button */
     transition: background-color 0.3s; /* Smooth transition */
 }
 

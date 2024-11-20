@@ -17,26 +17,6 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ValidationError
 
-
-def post_detail(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    comments = post.comments.all().order_by('-created_at')  # Fetch comments associated with the post
-
-    if request.method == 'POST':
-        content = request.POST.get('content')  # Get the comment content from the form
-
-        if content:
-            author = request.user if request.user.is_authenticated else None
-            Comment.objects.create(post=post, author=author, content=content)
-            # After adding the comment, fetch comments again to include the new one
-            comments = post.comments.all().order_by('-created_at')
-
-    # Render the post detail page with the post and comments
-    return render(request, 'base/post_detail.html', {
-        'post': post,
-        'comments': comments,
-    })
-    
 def recent_activity_view(request):
     # Query for the 10 most recent posts and comments
     recent_posts = Post.objects.all().order_by('-created_at')[:10]
@@ -94,9 +74,6 @@ def home_view(request):
         'topics': topics
     })
 
-
-
-
 @login_required
 def profile_view(request):
     user = request.user
@@ -148,22 +125,195 @@ def user_profile_view(request, pk):
     }
     return render(request, 'base/user_profile.html', context)
 
+# View to create a new post
 def create_post(request):
+    # Fetch all topics to display in the form
+    topics = Topic.objects.all()
+
     if request.method == 'POST':
-        # Handle post creation
-        post = Post.objects.create(
-            title=request.POST['title'],
-            content=request.POST['content'],
-            user=request.user
-        )
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        topic_ids = request.POST.getlist('topics')  # Get selected topics (multiple)
+
+        # Ensure the user is logged in
+        if not request.user.is_authenticated:
+            messages.error(request, "You must be logged in to create a post.")
+            return redirect('login')
+
+        if title and content:
+            # Create the post
+            post = Post.objects.create(
+                author=request.user,
+                title=title,
+                content=content
+            )
+
+            # Add selected topics to the post
+            post.topics.set(Topic.objects.filter(id__in=topic_ids))
+
+            # Log the creation of the post as an activity
+            Activity.objects.create(user=request.user, action='CREATED_POST', post=post)
+
+            messages.success(request, "Post created successfully.")
+            return redirect('post_detail', pk=post.pk)
+
+    return render(request, 'base/create_post.html', {'topics': topics})
+
+# View to display a single post and its details (including comments)
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    comments = post.comments.all().order_by('-created_at')  # Fetch comments associated with the post
+
+    # Handle comment submission
+    if request.method == 'POST':
+        content = request.POST.get('content')  # Get the comment content from the form
+
+        if content:
+            author = request.user if request.user.is_authenticated else None
+            Comment.objects.create(post=post, author=author, content=content)
+            # After adding the comment, fetch comments again to include the new one
+            comments = post.comments.all().order_by('-created_at')
+
+        # Handle delete comment for post owner or comment owner
+        if 'delete_comment' in request.POST:
+            comment_id = request.POST.get('delete_comment')
+            comment = get_object_or_404(Comment, pk=comment_id)
+            
+            # Ensure only the post owner or the comment owner can delete it
+            if request.user == post.author or request.user == comment.author:
+                comment.delete()
+                messages.success(request, "Comment deleted successfully.")
+            else:
+                messages.error(request, "You do not have permission to delete this comment.")
         
-        # Log the activity
-        Activity.objects.create(user=request.user, action='CREATED_POST', post=post)
-        
-        # Redirect or render response
-        return redirect('profile', pk=request.user.pk)
+            return redirect('post_detail', pk=pk)
+
+        # Handle Join or Leave post
+        if 'join' in request.POST:
+            # Check if the user is already a member of the post
+            if request.user not in post.members.all():
+                post.members.add(request.user)
+                # Remove the old "JOINED_POST" activity if it exists
+                Activity.objects.filter(post=post, user=request.user, action='JOINED_POST').delete()
+                # Log the new "JOINED_POST" action with the current timestamp
+                Activity.objects.create(user=request.user, action='JOINED_POST', post=post)
+                messages.success(request, "You have joined the group.")
+            else:
+                messages.info(request, "You are already a member of this post.")
+                
+        elif 'leave' in request.POST:
+            # Check if the user is a member before allowing them to leave
+            if request.user in post.members.all():
+                post.members.remove(request.user)
+                # Remove the old "LEFT_POST" activity if it exists
+                Activity.objects.filter(post=post, user=request.user, action='LEFT_POST').delete()
+                # Log the new "LEFT_POST" action with the current timestamp
+                Activity.objects.create(user=request.user, action='LEFT_POST', post=post)
+                messages.success(request, "You have left the group.")
+            else:
+                messages.info(request, "You are not a member of this post.")
+
+        # Handle clearing the activity log (only for the post owner)
+        if 'clear_activity' in request.POST:
+            if request.user == post.author:
+                # Clear all activities related to the post
+                Activity.objects.filter(post=post).delete()
+                messages.success(request, "All recent activity has been cleared.")
+            else:
+                messages.error(request, "You do not have permission to clear the activity log.")
+
+            return redirect('post_detail', pk=pk)
+
+                
+        return redirect('post_detail', pk=pk)
+
+    # Get the members list, including the owner and the other members
+    members = post.members.all()
     
-    return render(request, 'posts/create_post.html')
+    # Fetch the recent activities related to the post
+    recent_activities = Activity.objects.filter(post=post).order_by('-timestamp')
+
+    # Render the post detail page with the post, comments, and members
+    return render(request, 'base/post_detail.html', {
+        'post': post,
+        'comments': comments,
+        'members': members,  # Pass the members list to the template
+        'recent_activities': recent_activities,  # Pass recent activities
+    })
+
+# View to edit an existing post
+def edit_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    # Only allow the post owner to edit the post
+    if post.author != request.user:
+        messages.error(request, "You do not have permission to edit this post.")
+        return redirect('post_detail', pk=pk)
+
+    # If the request is POST, handle form submission
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        topics = request.POST.getlist('topics')  # Get the selected topics (multiple)
+
+        # Ensure the title and content are not empty
+        if title and content:
+            # Update the post
+            post.title = title
+            post.content = content
+
+            # Update the topics (ManyToMany field)
+            post.topics.clear()  # Remove any existing topics
+            for topic_name in topics:
+                topic_obj, created = Topic.objects.get_or_create(name=topic_name)  # Get or create topic
+                post.topics.add(topic_obj)  # Add the topic to the post
+
+            post.save()
+
+            # Log the edit as an activity
+            Activity.objects.create(user=request.user, action='EDITED_POST', post=post)
+
+            messages.success(request, "Post updated successfully.")
+            return redirect('home')
+
+    # If the request is GET, pre-fill the form with existing data
+    return render(request, 'base/edit_post.html', {
+        'post': post,
+        'topics': post.topics.all(),  # Send current topics to the template
+        'all_topics': Topic.objects.all(),  # Send all available topics to the template for selection
+    })
+
+# View to delete a post
+def delete_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    # Only allow the post owner to delete the post
+    if post.author != request.user:
+        messages.error(request, "You do not have permission to delete this post.")
+        return redirect('post_detail', pk=pk)
+
+    post.delete()
+
+    # Log the deletion as an activity
+    #Activity.objects.create(user=request.user, action='DELETED_POST', post=post)
+
+    messages.success(request, "Post deleted successfully.")
+    return redirect('home')
+
+# View to delete a comment on a post
+def delete_comment(request, pk, comment_id):
+    post = get_object_or_404(Post, pk=pk)
+    comment = get_object_or_404(Comment, pk=comment_id)
+
+    # Only allow the post owner or comment owner to delete the comment
+    if request.user == post.author or request.user == comment.author:
+        comment.delete()
+        messages.success(request, "Comment deleted successfully.")
+    else:
+        messages.error(request, "You do not have permission to delete this comment.")
+    
+    return redirect('post_detail', pk=pk)
+
 def search(request):
     query = request.GET.get('q', '')
     if query:
