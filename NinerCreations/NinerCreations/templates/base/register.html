@@ -6,6 +6,32 @@
     <form method="POST">
       {% csrf_token %}
 
+      <!-- First Name Field with Error -->
+      <div class="form-group">
+        {{ form.first_name.label_tag }}
+        {{ form.first_name }}
+        {% if form.first_name.errors %}
+          <div class="error-message">
+            {% for error in form.first_name.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Last Name Field with Error -->
+      <div class="form-group">
+        {{ form.last_name.label_tag }}
+        {{ form.last_name }}
+        {% if form.last_name.errors %}
+          <div class="error-message">
+            {% for error in form.last_name.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
       <!-- Username Field with Error -->
       <div class="form-group">
         {{ form.username.label_tag }}
