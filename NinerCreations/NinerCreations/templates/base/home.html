@@ -24,9 +24,11 @@
         <h2>Latest Posts</h2>
         <div class="posts-list">
             <!-- Add Post Button at the top -->
-            <div class="add-post-button-container">
-                <a href="{% url 'create_post' %}" class="btn-add-post">Add Post</a>
-            </div>
+            {% if user.is_authenticated %}
+                <div class="add-post-button-container">
+                    <a href="{% url 'create_post' %}" class="btn-add-post">Add Post</a>
+                </div>
+            {% endif %}
 
             {% for post in posts %}
                 <a href="{% url 'post_detail' post.pk %}" class="post-item-link">

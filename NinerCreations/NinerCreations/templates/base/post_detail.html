@@ -6,16 +6,19 @@
     <a class="btn btn-primary" href="{% url 'home' %}">← Back to Home</a>
 
     <!-- Join/Leave Button for non-owners -->
-    {% if request.user != post.author %}
-        <form method="POST" class="join-leave-form" style="display:inline;">
-            {% csrf_token %}
-            {% if request.user in post.members.all %}
-                <button type="submit" name="leave" class="btn btn-danger">Leave</button>
-            {% else %}
-                <button type="submit" name="join" class="btn btn-success">Join</button>
-            {% endif %}
-        </form>
+    {% if user.is_authenticated %}
+        {% if request.user != post.author %}
+            <form method="POST" class="join-leave-form" style="display:inline;">
+                {% csrf_token %}
+                {% if request.user in post.members.all %}
+                    <button type="submit" name="leave" class="btn btn-danger">Leave</button>
+                {% else %}
+                    <button type="submit" name="join" class="btn btn-success">Join</button>
+                {% endif %}
+            </form>
+        {% endif %}
     {% endif %}
+
 
     <!-- Edit Button for the owner of the post -->
     {% if request.user == post.author %}
