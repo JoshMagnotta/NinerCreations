@@ -107,3 +107,55 @@ class ProfilePageViewTestCase(TestCase):
         self.assertContains(response, self.other_post.title)
         self.assertContains(response, self.other_comment.content)
         self.assertContains(response, self.other_project.name)
+        
+    def test_create_project(self):
+        # Test creating a new project
+        response = self.client.post(reverse('add_project'), {
+            'project_name': 'New Test Project',
+            'project_description': 'This is a test project description.',
+            'project_link': 'https://github.com/test/new-test-project'
+        })
+
+        self.assertEqual(response.status_code, 302)  # Should redirect after success
+        self.assertTrue(Project.objects.filter(name='New Test Project').exists())
+        project = Project.objects.get(name='New Test Project')
+        self.assertEqual(project.description, 'This is a test project description.')
+        self.assertEqual(project.github_link, 'https://github.com/test/new-test-project')
+        self.assertEqual(project.user, self.user)
+
+    def test_edit_project(self):
+        # Create a project to edit
+        project = Project.objects.create(
+            user=self.user, 
+            name="Test Project", 
+            description="Original Description", 
+            github_link="https://github.com/test/original"
+        )
+        
+        # Test editing the project
+        response = self.client.post(reverse('edit_project', args=[project.id]), {
+            'project_name': 'Updated Project Name',
+            'project_description': 'Updated Description',
+            'project_link': 'https://github.com/test/updated'
+        })
+
+        self.assertEqual(response.status_code, 302)  # Should redirect after success
+        project.refresh_from_db()
+        self.assertEqual(project.name, 'Updated Project Name')
+        self.assertEqual(project.description, 'Updated Description')
+        self.assertEqual(project.github_link, 'https://github.com/test/updated')
+
+    def test_delete_project(self):
+        # Create a project to delete
+        project = Project.objects.create(
+            user=self.user, 
+            name="Test Project to Delete", 
+            description="Delete Me", 
+            github_link="https://github.com/test/delete-me"
+        )
+        
+        # Test deleting the project
+        response = self.client.post(reverse('delete_project', args=[project.id]))
+        
+        self.assertEqual(response.status_code, 302)  # Should redirect after success
+        self.assertFalse(Project.objects.filter(id=project.id).exists())
