@@ -944,3 +944,91 @@ a:hover {
     margin-top: 3px;
     
 }
+
+/*Settings Page*/
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form {
+    width: 100%;
+}
+
+label {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+    line-height: 1.5;
+}
+
+input[type="file"], textarea {
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+textarea {
+    resize: vertical; /* Allows resizing only vertically */
+}
+
+button {
+    background-color: #1A3D31;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #155d26;
+}
+
+img {
+    display: block;
+    margin-bottom: 15px;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover; /* Ensures the image scales properly */
+}
+
+#preview-image {
+    width: 100px; /* Adjust width */
+    height: 100px; /* Adjust height */
+    border-radius: 50%; /* Make it circular */
+    object-fit: cover; /* Ensure the image fits inside the circle */
+    margin-top: 10px; /* Add spacing above the image */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Optional: Add a slight shadow for better visibility */
+}
+
+.delete-account-btn {
+    background-color: #8B0000; /* Dark red */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth color transition */
+}
+
+.delete-account-btn:hover {
+    background-color: #FF6347; /* Lighter red when hovered */
+}

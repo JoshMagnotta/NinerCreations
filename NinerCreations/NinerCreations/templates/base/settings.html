@@ -1,7 +1,90 @@
-<!-- templates/base/settings.html -->
-{% extends "base/base.html" %}
+{% extends 'base/base.html' %}
+{% load static %} <!-- Load the static tag library -->
 
 {% block content %}
-<h1>Settings Page</h1>
-<p>This is the settings page content.</p>
+<div class="container mt-4">
+    <h1 class="text-center">Settings Page</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- First Name -->
+        <div class="form-group">
+            <label for="first_name" style="display: block; font-weight: bold; margin-bottom: 10px;">First Name</label>
+            <input type="text" id="first_name" name="first_name" 
+                   class="form-control" 
+                   value="{{ form.first_name.value|default:user.first_name }}" 
+                   placeholder="Enter your first name">
+        </div>
+
+        <!-- Last Name -->
+        <div class="form-group">
+            <label for="last_name" style="display: block; font-weight: bold; margin-bottom: 10px;">Last Name</label>
+            <input type="text" id="last_name" name="last_name" 
+                   class="form-control" 
+                   value="{{ form.last_name.value|default:user.last_name }}" 
+                   placeholder="Enter your last name">
+        </div>
+
+        <!-- Username -->
+        <div class="form-group">
+            <label for="username" style="display: block; font-weight: bold; margin-bottom: 10px;">Username</label>
+            <input type="text" id="username" name="username" 
+                   class="form-control" 
+                   value="{{ form.username.value|default:user.username }}" 
+                   placeholder="Enter your username">
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+            <label for="email" style="display: block; font-weight: bold; margin-bottom: 10px;">Email</label>
+            <input type="email" id="email" name="email" 
+                   class="form-control" 
+                   value="{{ form.email.value|default:user.email }}" 
+                   placeholder="Enter your email">
+        </div>
+
+        <!-- Profile Picture -->
+        <div class="form-group">
+            <label for="profile_picture" style="display: block; font-weight: bold; margin-bottom: 10px;">Change Profile Picture</label>
+            <input type="file" id="profile_picture" name="profile_picture" 
+                   class="form-control" accept="image/*" style="margin-bottom: 10px;">
+
+            <!-- Profile Picture Preview -->
+            <div id="preview-container" style="margin-top: 10px; text-align: center;">
+                <img id="preview-image" 
+                     src="{% if profile.profile_picture and profile.profile_picture.url %}{{ profile.profile_picture.url }}{% else %}{% static 'images/profile-placeholder.png' %}{% endif %}" 
+                     alt="Profile Picture" 
+                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-top: 10px;">
+            </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="form-group">
+            <label for="bio" style="display: block; font-weight: bold; margin-bottom: 10px;">Bio</label>
+            <textarea id="bio" name="bio" class="form-control" rows="5" 
+                      placeholder="Enter your bio">{{ form.bio.value|default:profile.bio }}</textarea>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+            <label for="password" style="display: block; font-weight: bold; margin-bottom: 10px;">New Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Enter a new password">
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+            <label for="confirm_password" style="display: block; font-weight: bold; margin-bottom: 10px;">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm your new password">
+        </div>
+
+        <!-- Save Button -->
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save</button>
+    </form>
+    
+    <!-- Delete Account Section -->
+    <form method="POST" action="{% url 'delete_account' %}" style="margin-top: 20px;">
+        {% csrf_token %}
+        <button type="submit" class="btn delete-account-btn">Delete Account</button>
+    </form>
+</div>
 {% endblock %}
