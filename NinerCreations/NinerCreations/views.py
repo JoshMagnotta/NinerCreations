@@ -229,8 +229,11 @@ def post_detail(request, pk):
     # Get the members list, including the owner and the other members
     members = post.members.all()
 
-    # Fetch the recent activities related to the post
-    recent_activities = Activity.objects.filter(post=post).order_by('-timestamp')
+    # Fetch recent activities related only to joining or leaving the post
+    recent_activities = Activity.objects.filter(
+        post=post,
+        action__in=['JOINED_POST', 'LEFT_POST']
+    ).order_by('-timestamp')
 
     # Render the post detail page with the post, comments, and members
     return render(request, 'base/post_detail.html', {
