@@ -173,7 +173,7 @@ def post_detail(request, pk):
         if content:
             author = request.user if request.user.is_authenticated else None
             Comment.objects.create(post=post, author=author, content=content)
-            # After adding the comment, fetch comments again to include the new one
+            # Fetch comments again to include the new one
             comments = post.comments.all().order_by('-created_at')
 
         # Handle delete comment for post owner or comment owner
@@ -187,29 +187,28 @@ def post_detail(request, pk):
                 messages.success(request, "Comment deleted successfully.")
             else:
                 messages.error(request, "You do not have permission to delete this comment.")
-        
+            
             return redirect('post_detail', pk=pk)
 
         # Handle Join or Leave post
         if 'join' in request.POST:
-            # Check if the user is already a member of the post
-            if request.user not in post.members.all():
-                post.members.add(request.user)
-                # Remove the old "JOINED_POST" activity if it exists
-                Activity.objects.filter(post=post, user=request.user, action='JOINED_POST').delete()
-                # Log the new "JOINED_POST" action with the current timestamp
-                Activity.objects.create(user=request.user, action='JOINED_POST', post=post)
-                messages.success(request, "You have joined the group.")
+            if post.privacy == "public":
+                # Allow joining only for public posts
+                if request.user not in post.members.all():
+                    post.members.add(request.user)
+                    Activity.objects.filter(post=post, user=request.user, action='JOINED_POST').delete()
+                    Activity.objects.create(user=request.user, action='JOINED_POST', post=post)
+                    messages.success(request, "You have joined the group.")
+                else:
+                    messages.info(request, "You are already a member of this post.")
             else:
-                messages.info(request, "You are already a member of this post.")
-                
+                messages.error(request, "You cannot join a private group unless invited.")
+
         elif 'leave' in request.POST:
-            # Check if the user is a member before allowing them to leave
+            # Allow leaving for both public and private posts
             if request.user in post.members.all():
                 post.members.remove(request.user)
-                # Remove the old "LEFT_POST" activity if it exists
                 Activity.objects.filter(post=post, user=request.user, action='LEFT_POST').delete()
-                # Log the new "LEFT_POST" action with the current timestamp
                 Activity.objects.create(user=request.user, action='LEFT_POST', post=post)
                 messages.success(request, "You have left the group.")
             else:
@@ -218,20 +217,18 @@ def post_detail(request, pk):
         # Handle clearing the activity log (only for the post owner)
         if 'clear_activity' in request.POST:
             if request.user == post.author:
-                # Clear all activities related to the post
                 Activity.objects.filter(post=post).delete()
                 messages.success(request, "All recent activity has been cleared.")
             else:
                 messages.error(request, "You do not have permission to clear the activity log.")
-
+            
             return redirect('post_detail', pk=pk)
 
-                
         return redirect('post_detail', pk=pk)
 
     # Get the members list, including the owner and the other members
     members = post.members.all()
-    
+
     # Fetch the recent activities related to the post
     recent_activities = Activity.objects.filter(post=post).order_by('-timestamp')
 
