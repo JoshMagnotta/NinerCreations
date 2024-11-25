@@ -21,6 +21,8 @@ from .views import profile_view
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import views as auth_views
 from django.conf.urls import handler400
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -35,6 +37,13 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Add this line
     path('add_project/', views.add_project, name='add_project'),
     path('delete_project/<int:project_id>/', views.delete_project, name='delete_project'),
-     path('edit-project/<int:project_id>/', views.edit_project, name='edit_project'),
+    path('edit-project/<int:project_id>/', views.edit_project, name='edit_project'),
+    path('settings/', views.settings, name='settings'),
+    path('profile/', views.profile, name='profile'),
+    path('delete-account/', views.delete_account, name='delete_account'),
+
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 handler400 = 'NinerCreations.views.handle_invalid_topic_id'

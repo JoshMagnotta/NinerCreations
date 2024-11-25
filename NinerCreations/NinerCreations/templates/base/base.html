@@ -10,13 +10,58 @@
 <body>
     <div class="wrapper"> 
         <!-- Header -->
-        {% include "base/header.html" %}
+        <div class="header">
+            <div class="logo">
+                <a href="/">
+                    <h1>NinerCreations</h1>
+                </a>
+            </div>
+            
+            <div class="search-bar">
+                <form action="/search/" method="get">
+                    <input type="text" name="q" placeholder="Search" value="">
+                    <button type="submit">&#128269;</button> <!-- Search icon as button -->
+                </form>
+            </div>
+
+            <div class="header-right">
+                {% if user.is_authenticated %}
+                    <span>{{ user.username }}</span>
+                    <div class="profile-container">
+                        <div class="profile-picture">
+                            <!-- Display the user's profile picture or fallback to the placeholder -->
+                            <img src="{% if user.profile.profile_picture and user.profile.profile_picture.url %}{{ user.profile.profile_picture.url }}{% else %}{% static 'images/profile-placeholder.png' %}{% endif %}" 
+                                 alt="Profile Picture" 
+                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                        </div>
+                        <div class="dropdown">
+                            <button class="dropdown-btn">▼</button>
+                            <div class="dropdown-content">
+                                <a href="{% url 'profile' %}">Profile</a>
+                                <a href="{% url 'settings' %}">Settings</a>
+                                <a href="{% url 'logout' %}" 
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
+                                <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                                    {% csrf_token %}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="login-btn">Login</a>
+                {% endif %}
+            </div>
+        </div>
 
         <!-- Navigation Links for Register and Login -->
+        {% if not user.is_authenticated %}
         <nav>
             <a href="{% url 'register' %}">Register</a>
             <a href="{% url 'login' %}">Login</a>
         </nav>
+        {% endif %}
         
         <!-- Main content area -->
         <div class="content">

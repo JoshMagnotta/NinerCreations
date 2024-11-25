@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -127,9 +128,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -139,3 +138,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Redirect URLs
 LOGIN_REDIRECT_URL = 'home'  # Redirect to the home page after login
 LOGOUT_REDIRECT_URL = 'login'  # Redirect to the login page after logout
+
+LOGIN_URL = 'login'
+
+#Profile picture stuff
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

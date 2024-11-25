@@ -16,6 +16,10 @@ from .registerform import RegisterForm
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ValidationError
+from .models import Profile
+from .forms import ProfileForm
+from .models import Post, Comment, Project, Profile
+from django.shortcuts import render, redirect, get_object_or_404
 
 
 def post_detail(request, post_id):
@@ -122,26 +126,23 @@ def profile_view(request):
 
 
 def user_profile_view(request, pk):
-    # Get the user object based on the primary key (pk)
     user = get_object_or_404(User, pk=pk)
-    
-    # Fetch recent rooms, posts, and comments by the user
-    recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]  # Last 5 rooms
+    # Get or create the Profile for this user
+    profile, created = Profile.objects.get_or_create(user=user)
+
+    recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]
     recent_posts = Post.objects.filter(author=user).order_by('-created_at')[:10]
     recent_comments = Comment.objects.filter(author=user).order_by('-created_at')[:10]
-    
-    # Combine posts and comments, then sort by created_at to get the 10 most recent activities
+    projects = Project.objects.filter(user=user)
+
     recent_activities = sorted(
         list(recent_posts) + list(recent_comments),
         key=lambda x: x.created_at,
         reverse=True
     )[:10]
-    # Fetch the completed projects for this user
-    projects = Project.objects.filter(user=user).order_by('-created_at')  # Adjust ordering if needed
 
-    # Pass data to the template
     context = {
-        'user': user,
+        'profile': profile,
         'recent_rooms': recent_rooms,
         'recent_activities': recent_activities,
         'projects': projects,
@@ -272,3 +273,109 @@ def edit_project(request, project_id):
     # Render an edit form if method is GET
     context = {'project': project}
     return render(request, 'base/edit_project.html', context)
+# Profile Page View
+@login_required
+def profile_view(request):
+    """
+    View for displaying the logged-in user's profile, including bio, profile picture, 
+    recent posts, and projects.
+    """
+    profile = get_object_or_404(Profile, user=request.user)
+    recent_rooms = Post.objects.filter(author=request.user).order_by('-created_at')[:5]
+    recent_posts = Post.objects.filter(author=request.user).order_by('-created_at')[:10]
+    recent_comments = Comment.objects.filter(author=request.user).order_by('-created_at')[:10]
+    projects = Project.objects.filter(user=request.user)
+
+    # Combine posts and comments into recent activities
+    recent_activities = sorted(
+        list(recent_posts) + list(recent_comments),
+        key=lambda x: x.created_at,
+        reverse=True
+    )[:10]
+
+    return render(request, 'base/profile.html', {
+        'profile': profile,
+        'recent_rooms': recent_rooms,
+        'recent_activities': recent_activities,
+        'projects': projects,
+    })
+
+# User Settings View
+@login_required
+def settings(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        # Update ProfileForm for bio and profile picture
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+
+        # Get new values for first name, last name, username, and email
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+
+        # Get and validate password inputs
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if form.is_valid():
+            # Update user details
+            user = request.user
+            user.first_name = first_name
+            user.last_name = last_name
+            user.username = username
+            user.email = email
+
+            # Handle password update if provided
+            if password and password == confirm_password:
+                user.set_password(password)
+
+            # Save user and profile changes
+            user.save()
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('settings')
+        else:
+            messages.error(request, "There was an error updating your profile.")
+
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'base/settings.html', {
+        'form': form,
+        'profile': profile,
+    })
+
+
+# User Profile View (Public Profile)
+def user_profile_view(request, pk):
+    """
+    View to display another user's public profile.
+    """
+    user = get_object_or_404(User, pk=pk)
+    profile = get_object_or_404(Profile, user=user)
+    recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]
+    projects = Project.objects.filter(user=user)
+
+    return render(request, 'base/user_profile.html', {
+        'user': user,
+        'profile': profile,
+        'recent_rooms': recent_rooms,
+        'projects': projects,
+    })
+
+# Delete Account View
+@login_required
+def delete_account(request):
+    """
+    View to handle account deletion for the logged-in user.
+    """
+    if request.method == "POST":
+        user = request.user
+        user.delete()
+        messages.success(request, "Your account has been deleted.")
+        return redirect('home')
+
+    return render(request, 'base/delete_account.html')
+
