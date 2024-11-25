@@ -17,7 +17,7 @@
 
     <div class="header-right">
         {% if user.is_authenticated %}
-            <span>{{ user.username }}</span>
+            <span>{{ user.username }}</span> <!-- Always show the logged-in user's username -->
             <div class="profile-container">
                 <div class="profile-picture">
                     <img src="{% static 'images/profile-placeholder.png' %}" alt="Profile Picture">
@@ -41,4 +41,5 @@
             <a href="{% url 'login' %}" class="login-btn">Login</a>
         {% endif %}
     </div>
+    
 </div>
