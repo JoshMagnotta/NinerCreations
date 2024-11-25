@@ -1,90 +1,148 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
 {% block content %}
-  <div class="container mt-4">
-    <h2>Register</h2>
-    <form method="POST">
-      {% csrf_token %}
+<div class="container mt-4">
+    <h2 class="text-center">Register</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
 
-      <!-- First Name Field with Error -->
-      <div class="form-group">
-        {{ form.first_name.label_tag }}
-        {{ form.first_name }}
-        {% if form.first_name.errors %}
-          <div class="error-message">
-            {% for error in form.first_name.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
+        <!-- First Name -->
+        <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input 
+                type="text" 
+                id="first_name" 
+                name="first_name" 
+                class="form-control" 
+                placeholder="Enter your first name"
+            >
+            {% if form.first_name.errors %}
+                <div class="error-message">
+                    {% for error in form.first_name.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
 
-      <!-- Last Name Field with Error -->
-      <div class="form-group">
-        {{ form.last_name.label_tag }}
-        {{ form.last_name }}
-        {% if form.last_name.errors %}
-          <div class="error-message">
-            {% for error in form.last_name.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
+        <!-- Last Name -->
+        <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input 
+                type="text" 
+                id="last_name" 
+                name="last_name" 
+                class="form-control" 
+                placeholder="Enter your last name"
+            >
+            {% if form.last_name.errors %}
+                <div class="error-message">
+                    {% for error in form.last_name.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
 
-      <!-- Username Field with Error -->
-      <div class="form-group">
-        {{ form.username.label_tag }}
-        {{ form.username }}
-        {% if form.username.errors %}
-          <div class="error-message">
-            {% for error in form.username.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
+        <!-- Username -->
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input 
+                type="text" 
+                id="username" 
+                name="username" 
+                class="form-control" 
+                placeholder="Enter your username"
+            >
+            {% if form.username.errors %}
+                <div class="error-message">
+                    {% for error in form.username.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
 
-      <!-- Email Field with Error -->
-      <div class="form-group">
-        {{ form.email.label_tag }}
-        {{ form.email }}
-        {% if form.email.errors %}
-          <div class="error-message">
-            {% for error in form.email.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
+        <!-- Email -->
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                class="form-control" 
+                placeholder="Enter your email"
+            >
+            {% if form.email.errors %}
+                <div class="error-message">
+                    {% for error in form.email.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
 
-      <!-- Password1 Field with Error -->
-      <div class="form-group">
-        {{ form.password1.label_tag }}
-        {{ form.password1 }}
-        {% if form.password1.errors %}
-          <div class="error-message">
-            {% for error in form.password1.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
+        <!-- Profile Picture -->
+        <div class="form-group">
+            <label for="profile_picture">Profile Picture</label>
+            <input 
+                type="file" 
+                id="profile_picture" 
+                name="profile_picture" 
+                class="form-control"
+                accept="image/*"
+            >
+            {% if form.profile_picture.errors %}
+                <div class="error-message">
+                    {% for error in form.profile_picture.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-      <!-- Password2 Field with Error -->
-      <div class="form-group">
-        {{ form.password2.label_tag }}
-        {{ form.password2 }}
-        {% if form.password2.errors %}
-          <div class="error-message">
-            {% for error in form.password2.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
+        </div>
 
-      <button type="submit" class="btn btn-primary">Register</button>
+        <!-- Password -->
+        <div class="form-group">
+            <label for="password1">Password</label>
+            <input 
+                type="password" 
+                id="password1" 
+                name="password1" 
+                class="form-control" 
+                placeholder="Enter a password"
+            >
+            {% if form.password1.errors %}
+                <div class="error-message">
+                    {% for error in form.password1.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+            <label for="password2">Confirm Password</label>
+            <input 
+                type="password" 
+                id="password2" 
+                name="password2" 
+                class="form-control" 
+                placeholder="Confirm your password"
+            >
+            {% if form.password2.errors %}
+                <div class="error-message">
+                    {% for error in form.password2.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary mt-3">Register</button>
     </form>
-  </div>
+</div>
 {% endblock %}
