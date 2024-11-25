@@ -350,20 +350,33 @@ def settings(request):
 
 # User Profile View (Public Profile)
 def user_profile_view(request, pk):
-    """
-    View to display another user's public profile.
-    """
-    user = get_object_or_404(User, pk=pk)
-    profile = get_object_or_404(Profile, user=user)
-    recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]
-    projects = Project.objects.filter(user=user)
+    # Fetch the user object for the profile being viewed
+    profile_user = get_object_or_404(User, pk=pk)
 
-    return render(request, 'base/user_profile.html', {
-        'user': user,
-        'profile': profile,
+    # Fetch recent rooms, posts, and comments by the profile owner
+    recent_rooms = Post.objects.filter(author=profile_user).order_by('-created_at')[:5]
+    recent_posts = Post.objects.filter(author=profile_user).order_by('-created_at')[:10]
+    recent_comments = Comment.objects.filter(author=profile_user).order_by('-created_at')[:10]
+
+    # Combine posts and comments, sorted by creation date
+    recent_activities = sorted(
+        list(recent_posts) + list(recent_comments),
+        key=lambda x: x.created_at,
+        reverse=True
+    )[:10]
+
+    # Fetch the completed projects for this profile owner
+    projects = Project.objects.filter(user=profile_user).order_by('-created_at')
+
+    # Pass the profile owner as `profile_user` and keep `user` for the logged-in user
+    context = {
+        'profile_user': profile_user,
         'recent_rooms': recent_rooms,
+        'recent_activities': recent_activities,
         'projects': projects,
-    })
+    }
+    return render(request, 'base/user_profile.html', context)
+
 
 # Delete Account View
 @login_required

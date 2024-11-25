@@ -16,13 +16,11 @@
     </div>
 
     <div class="header-right">
-        {% if request.user.is_authenticated %}
-            <!-- Display the logged-in user's username -->
-            <span>{{ request.user.username }}</span>
+        {% if user.is_authenticated %}
+            <span>{{ user.username }}</span> <!-- Always show the logged-in user's username -->
             <div class="profile-container">
                 <div class="profile-picture">
-                    <!-- Display the logged-in user's profile picture if available -->
-                    <img src="{% if request.user.profile %}{{ request.user.profile.profile_picture.url }}{% else %}{% static 'images/profile-placeholder.png' %}{% endif %}" alt="Profile Picture">
+                    <img src="{% static 'images/profile-placeholder.png' %}" alt="Profile Picture">
                 </div>
                 <div class="dropdown">
                     <button class="dropdown-btn">▼</button>
@@ -43,4 +41,5 @@
             <a href="{% url 'login' %}" class="login-btn">Login</a>
         {% endif %}
     </div>
+    
 </div>

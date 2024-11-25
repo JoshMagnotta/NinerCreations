@@ -2,25 +2,25 @@
 
 {% block content %}
 <div class="profile-page-container">
-    <h1>{{ user.username }}'s Profile</h1>
-    <p><strong>Name:</strong> {{ user.get_full_name }}</p> <!-- Full name if both first and last are set -->
-    
-    <h2>Created Rooms</h2>
-    {% if recent_rooms %}
-        <ul>
-            {% for room in recent_rooms %}
-                <li>
-                    <a class ="profile-tags" style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' room.id %}">
-                    <h3 style="margin-bottom: 10px;">{{ room.title }}</h3>
-                    </a>
-                    <p style="text-align: left;">{{ room.content }}</p>
-                    <small>Created on {{ room.created_at|date:"M d, Y" }}</small>  
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No rooms created yet.</p>
-    {% endif %}
+    <h1>{{ profile_user.username }}'s Profile</h1>
+<p><strong>Name:</strong> {{ profile_user.get_full_name }}</p>
+
+<h2>Created Rooms</h2>
+{% if recent_rooms %}
+    <ul>
+        {% for room in recent_rooms %}
+            <li>
+                <a href="{% url 'post_detail' room.id %}">
+                    <h3>{{ room.title }}</h3>
+                </a>
+                <p>{{ room.content }}</p>
+                <small>Created on {{ room.created_at|date:"M d, Y" }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No rooms created yet.</p>
+{% endif %}
 
     <h2>Recent Activities</h2>
     {% if recent_activities %}
