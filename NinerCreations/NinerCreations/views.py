@@ -191,16 +191,17 @@ def login(request):
 #Register account stuff
 def register(request):
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = RegisterForm(request.POST, request.FILES)  # Include `request.FILES` for file upload
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}!')
-            return redirect('login')  # Redirect to the login page after registration
+            messages.success(request, f'Account created for {username}! Please log in.')
+            return redirect('login')
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = RegisterForm()
     return render(request, 'base/register.html', {'form': form})
-
 def handle_invalid_topic_id(request, exception):
     # Render the custom 400 error page
     return render(request, '400.html', status=400)
