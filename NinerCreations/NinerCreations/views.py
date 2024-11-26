@@ -62,9 +62,6 @@ def recent_activity_view(request):
 from django.shortcuts import render, get_object_or_404
 from .models import Post, Comment, Topic
 
-# views.py
-
-
 
 def home_view(request):
     topic_id = request.GET.get('topic')
@@ -86,13 +83,6 @@ def home_view(request):
         'topics': topics,
         'recent_activities': recent_activities,
     })
-
-
-
-
-
-
-
 
 @login_required
 def profile_view(request):
