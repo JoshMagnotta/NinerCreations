@@ -20,6 +20,7 @@ from .models import Profile
 from .forms import ProfileForm
 from .models import Post, Comment, Project, Profile
 from django.shortcuts import render, redirect, get_object_or_404
+from .models import Post, Topic, Activity
 
 
 def post_detail(request, post_id):
@@ -63,40 +64,32 @@ from .models import Post, Comment, Topic
 
 # views.py
 
+
+
 def home_view(request):
     topic_id = request.GET.get('topic')
+    posts = Post.objects.all().order_by('-created_at')
 
-    # Validate topic_id to ensure it's an integer
     if topic_id:
         try:
-            topic_id = int(topic_id)
+            topic_id = int(topic_id)  # Ensure topic_id is an integer
+            posts = posts.filter(topics__id=topic_id).distinct()
         except ValueError:
-            # If topic_id is not a valid integer, return the custom error page
-            return render(request, '400.html', status=400)
+            # Return 400 with the error message in the body
+            return HttpResponseBadRequest("Invalid topic parameter.")
 
-    # If a valid topic_id is provided, filter by topic, else show all posts
-    posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at') if topic_id else Post.objects.all().order_by('-created_at')
-
-    # Retrieve the 10 most recent posts and comments
-    recent_posts = Post.objects.all().order_by('-created_at')[:10]
-    recent_comments = Comment.objects.all().order_by('-created_at')[:10]
-
-    # Combine posts and comments, then sort by created_at to get the 10 most recent activities
-    recent_activities = sorted(
-        list(recent_posts) + list(recent_comments),
-        key=lambda x: x.created_at,
-        reverse=True
-    )[:10]
-
-    # Retrieve all topics for the "Browse Topics" section
     topics = Topic.objects.all()
+    recent_activities = Activity.objects.all().order_by('-timestamp')[:10]
 
-    # Pass the posts, recent activities, and topics to the template
     return render(request, 'base/home.html', {
         'posts': posts,
+        'topics': topics,
         'recent_activities': recent_activities,
-        'topics': topics
     })
+
+
+
+
 
 
 
