@@ -103,26 +103,25 @@ def home_view(request):
 
 @login_required
 def profile_view(request):
-    user = request.user
-    recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]  # Last 5 rooms
-    recent_posts = Post.objects.filter(author=user).order_by('-created_at')[:10]
-    recent_comments = Comment.objects.filter(author=user).order_by('-created_at')[:10]
-    projects = Project.objects.filter(user=user)
-    
-    # Combine posts and comments, then sort by created_at to get the 10 most recent activities
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    recent_rooms = Post.objects.filter(author=request.user).order_by('-created_at')[:5]
+    recent_posts = Post.objects.filter(author=request.user).order_by('-created_at')[:10]
+    recent_comments = Comment.objects.filter(author=request.user).order_by('-created_at')[:10]
+    projects = Project.objects.filter(user=request.user)
+
     recent_activities = sorted(
         list(recent_posts) + list(recent_comments),
         key=lambda x: x.created_at,
         reverse=True
     )[:10]
 
-    context = {
-        'user': user,
+    return render(request, 'base/profile.html', {
+        'profile': profile,
         'recent_rooms': recent_rooms,
         'recent_activities': recent_activities,
         'projects': projects,
-    }
-    return render(request, 'base/profile.html', context)
+    })
+
 
 
 def user_profile_view(request, pk):
@@ -284,32 +283,6 @@ def edit_project(request, project_id):
     # Render an edit form if method is GET
     context = {'project': project}
     return render(request, 'base/edit_project.html', context)
-# Profile Page View
-@login_required
-def profile_view(request):
-    """
-    View for displaying the logged-in user's profile, including bio, profile picture, 
-    recent posts, and projects.
-    """
-    profile = get_object_or_404(Profile, user=request.user)
-    recent_rooms = Post.objects.filter(author=request.user).order_by('-created_at')[:5]
-    recent_posts = Post.objects.filter(author=request.user).order_by('-created_at')[:10]
-    recent_comments = Comment.objects.filter(author=request.user).order_by('-created_at')[:10]
-    projects = Project.objects.filter(user=request.user)
-
-    # Combine posts and comments into recent activities
-    recent_activities = sorted(
-        list(recent_posts) + list(recent_comments),
-        key=lambda x: x.created_at,
-        reverse=True
-    )[:10]
-
-    return render(request, 'base/profile.html', {
-        'profile': profile,
-        'recent_rooms': recent_rooms,
-        'recent_activities': recent_activities,
-        'projects': projects,
-    })
 
 # User Settings View
 @login_required
