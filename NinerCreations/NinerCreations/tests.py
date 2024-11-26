@@ -159,3 +159,45 @@ class ProfilePageViewTestCase(TestCase):
         
         self.assertEqual(response.status_code, 302)  # Should redirect after success
         self.assertFalse(Project.objects.filter(id=project.id).exists())
+
+from django.test import TestCase
+from django.urls import reverse
+from django.contrib.auth.models import User
+
+
+class HeaderFunctionalityTestCase(TestCase):
+    def setUp(self):
+        # Create a user
+        self.user = User.objects.create_user(username="testuser", password="password")
+        
+    def test_header_for_authenticated_user(self):
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(reverse('home'))
+        # Check if the placeholder image is present
+        self.assertContains(response, '<img src="/static/images/profile-placeholder.png"', html=False)
+        # Check for user-specific options
+        self.assertContains(response, "Profile")
+        self.assertContains(response, "Settings")
+        self.assertContains(response, "Logout")
+        self.assertContains(response, "testuser")
+
+    def test_header_for_anonymous_user(self):
+        # Access a page that includes the header without logging in
+        response = self.client.get(reverse('home'))
+        
+        # Ensure the header does not contain user-specific options
+        self.assertNotContains(response, "testuser")
+        self.assertNotContains(response, "Profile")
+        self.assertNotContains(response, "Settings")
+        self.assertNotContains(response, "Logout")
+        
+        # Ensure the login button is present
+        self.assertContains(response, '<a href="/login/" class="login-btn">Login</a>', html=True)
+
+    def test_search_bar_functionality(self):
+        response = self.client.get(reverse('home'))
+        # Check if the search input is present
+        self.assertContains(response, '<input type="text" name="q" placeholder="Search"', html=False)
+        # Check if the search button is present
+        self.assertContains(response, '<button type="submit">', html=False)
+
