@@ -20,6 +20,7 @@ from .models import Profile
 from .forms import ProfileForm
 from .models import Post, Comment, Project, Profile
 from django.shortcuts import render, redirect, get_object_or_404
+from .models import Post, Topic, Activity
 
 
 def post_detail(request, post_id):
@@ -61,7 +62,6 @@ def recent_activity_view(request):
 from django.shortcuts import render, get_object_or_404
 from .models import Post, Comment, Topic
 
-# views.py
 
 def home_view(request):
     topic_id = request.GET.get('topic')
@@ -71,17 +71,22 @@ def home_view(request):
         try:
             topic_id = int(topic_id)
         except ValueError:
-            # If topic_id is not a valid integer, return the custom error page
-            return render(request, '400.html', status=400)
+            # Pass the error_message context to the 400.html template
+            return render(request, '400.html', {'error_message': 'Invalid topic parameter.'}, status=400)
 
-    # If a valid topic_id is provided, filter by topic, else show all posts
-    posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at') if topic_id else Post.objects.all().order_by('-created_at')
+    # Filter posts by topic if provided, otherwise return all posts
+    if topic_id:
+        posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at')
+        recent_posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at')[:10]
+    else:
+        posts = Post.objects.all().order_by('-created_at')
+        recent_posts = Post.objects.all().order_by('-created_at')[:10]
 
-    # Retrieve the 10 most recent posts and comments
-    recent_posts = Post.objects.all().order_by('-created_at')[:10]
-    recent_comments = Comment.objects.all().order_by('-created_at')[:10]
+    # Retrieve comments related to the filtered posts
+    post_ids = posts.values_list('id', flat=True)
+    recent_comments = Comment.objects.filter(post__id__in=post_ids).order_by('-created_at')[:10]
 
-    # Combine posts and comments, then sort by created_at to get the 10 most recent activities
+    # Combine posts and comments, sorted by creation date, to get the 10 most recent activities
     recent_activities = sorted(
         list(recent_posts) + list(recent_comments),
         key=lambda x: x.created_at,
@@ -95,7 +100,7 @@ def home_view(request):
     return render(request, 'base/home.html', {
         'posts': posts,
         'recent_activities': recent_activities,
-        'topics': topics
+        'topics': topics,
     })
 
 

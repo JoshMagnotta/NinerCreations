@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Post, Topic, Comment, Project
+from .models import Post, Topic
+from django.utils.timezone import now
 
 class SearchFunctionalityTestCase(TestCase):
     def setUp(self):
@@ -201,3 +203,68 @@ class HeaderFunctionalityTestCase(TestCase):
         # Check if the search button is present
         self.assertContains(response, '<button type="submit">', html=False)
 
+
+class HomePageFilterTestCase(TestCase):
+    def setUp(self):
+        # Setup a user and topics
+        self.user = User.objects.create_user(username="testuser", password="password")
+        self.topic_django = Topic.objects.create(name="Django")
+        self.topic_python = Topic.objects.create(name="Python")
+
+        # Create posts and associate with topics
+        self.post_django = Post.objects.create(
+            author=self.user,
+            title="Django Guide",
+            content="Learn about Django"
+        )
+        self.post_django.topics.add(self.topic_django)
+
+        self.post_python = Post.objects.create(
+            author=self.user,
+            title="Python Guide",
+            content="Learn about Python"
+        )
+        self.post_python.topics.add(self.topic_python)
+
+        self.post_general = Post.objects.create(
+            author=self.user,
+            title="General Post",
+            content="A general post with no topic."
+        )
+
+    def test_no_filter(self):
+        response = self.client.get(reverse('home'))
+        self.assertContains(response, self.post_django.title)
+        self.assertContains(response, self.post_python.title)
+
+    def test_filter_by_django_topic(self):
+        response = self.client.get(reverse('home') + f'?topic={self.topic_django.id}')
+        self.assertContains(response, self.post_django.title)
+        self.assertNotContains(response, self.post_python.title)
+
+    def test_filter_by_python_topic(self):
+        response = self.client.get(reverse('home') + f'?topic={self.topic_python.id}')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.post_python.title)
+        self.assertNotContains(response, self.post_django.title)
+        self.assertNotContains(response, self.post_general.title)
+
+    def test_filter_by_invalid_topic(self):
+        response = self.client.get(reverse('home') + '?topic=99999')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.post_django.title)
+        self.assertNotContains(response, self.post_python.title)
+        self.assertNotContains(response, self.post_general.title)
+
+    def test_filter_with_non_integer_topic(self):
+        response = self.client.get(reverse('home') + '?topic=invalid')
+        self.assertEqual(response.status_code, 400)  # Expect 400 Bad Request
+        
+        # Assert that the error message is in the response
+        self.assertIn("Invalid topic parameter.", response.content.decode())
+
+    def test_filter_with_invalid_topic(self):
+        response = self.client.get(reverse('home') + '?topic=99999')
+        self.assertEqual(response.status_code, 200)  # Expect 200 for invalid topic ID
+        self.assertContains(response, "No posts available.")
+        
