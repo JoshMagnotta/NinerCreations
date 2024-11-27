@@ -65,24 +65,46 @@ from .models import Post, Comment, Topic
 
 def home_view(request):
     topic_id = request.GET.get('topic')
-    posts = Post.objects.all().order_by('-created_at')
 
+    # Validate topic_id to ensure it's an integer
     if topic_id:
         try:
-            topic_id = int(topic_id)  # Ensure topic_id is an integer
-            posts = posts.filter(topics__id=topic_id).distinct()
+            topic_id = int(topic_id)
         except ValueError:
-            # Return 400 with the error message in the body
-            return HttpResponseBadRequest("Invalid topic parameter.")
+            # Pass the error_message context to the 400.html template
+            return render(request, '400.html', {'error_message': 'Invalid topic parameter.'}, status=400)
 
+    # Filter posts by topic if provided, otherwise return all posts
+    if topic_id:
+        posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at')
+        recent_posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at')[:10]
+    else:
+        posts = Post.objects.all().order_by('-created_at')
+        recent_posts = Post.objects.all().order_by('-created_at')[:10]
+
+    # Retrieve comments related to the filtered posts
+    post_ids = posts.values_list('id', flat=True)
+    recent_comments = Comment.objects.filter(post__id__in=post_ids).order_by('-created_at')[:10]
+
+    # Combine posts and comments, sorted by creation date, to get the 10 most recent activities
+    recent_activities = sorted(
+        list(recent_posts) + list(recent_comments),
+        key=lambda x: x.created_at,
+        reverse=True
+    )[:10]
+
+    # Retrieve all topics for the "Browse Topics" section
     topics = Topic.objects.all()
-    recent_activities = Activity.objects.all().order_by('-timestamp')[:10]
 
+    # Pass the posts, recent activities, and topics to the template
     return render(request, 'base/home.html', {
         'posts': posts,
-        'topics': topics,
         'recent_activities': recent_activities,
+        'topics': topics,
     })
+
+
+
 
 @login_required
 def profile_view(request):

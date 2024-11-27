@@ -1,4 +1,3 @@
-<!-- templates/400.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,7 +42,13 @@
 <body>
     <h1>Oops! You shouldn't have done that 😅</h1>
     <h2>You tried, but failed. (or we failed) </h2>
+
+    <!-- Add this dynamic error message -->
+    <p>{{ error_message }}</p>
+
+    <!-- Keep the static fallback message -->
     <p>It looks like the URL you entered isn't quite right. Let's get you back on track.</p>
+
     <a href="{% url 'home' %}">Go Back to Home</a>
 </body>
 </html>

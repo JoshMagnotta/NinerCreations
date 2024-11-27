@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Post, Topic, Comment, Project
 from .models import Post, Topic
+from django.utils.timezone import now
 
 class SearchFunctionalityTestCase(TestCase):
     def setUp(self):
@@ -258,9 +259,12 @@ class HomePageFilterTestCase(TestCase):
     def test_filter_with_non_integer_topic(self):
         response = self.client.get(reverse('home') + '?topic=invalid')
         self.assertEqual(response.status_code, 400)  # Expect 400 Bad Request
+        
+        # Assert that the error message is in the response
         self.assertIn("Invalid topic parameter.", response.content.decode())
 
     def test_filter_with_invalid_topic(self):
         response = self.client.get(reverse('home') + '?topic=99999')
         self.assertEqual(response.status_code, 200)  # Expect 200 for invalid topic ID
         self.assertContains(response, "No posts available.")
+        
