@@ -329,3 +329,43 @@ class RecentActivityTestCase(TestCase):
             )
             last_index = current_index
 
+class HomePageTestCase(TestCase):
+    def setUp(self):
+        # Create a user and log them in
+        self.user = User.objects.create_user(username="testuser", password="password")
+        self.client.login(username="testuser", password="password")
+
+        # Create some posts
+        self.post1 = Post.objects.create(author=self.user, title="Post 1", content="Content for post 1")
+        self.post2 = Post.objects.create(author=self.user, title="Post 2", content="Content for post 2")
+
+    def test_homepage_displays_posts(self):
+        # Access the homepage
+        response = self.client.get(reverse('home'))
+        
+        # Check if the response is successful
+        self.assertEqual(response.status_code, 200)
+        
+        # Check if the posts are displayed on the homepage
+        self.assertContains(response, self.post1.title)
+        self.assertContains(response, self.post2.title)
+
+    def test_create_new_post(self):
+        # Send a POST request to create a new post
+        response = self.client.post(reverse('create_post'), {
+            'title': 'New Post Title',
+            'content': 'Content for the new post.'
+        })
+
+        # Get the newly created post
+        new_post = Post.objects.get(title='New Post Title')
+
+        # Check if the post creation redirects to the new post's detail page
+        self.assertRedirects(response, reverse('post_detail', args=[new_post.id]))
+
+        # Verify the post exists in the database
+        self.assertTrue(Post.objects.filter(title='New Post Title').exists())
+
+        # Verify the new post appears on the homepage
+        response = self.client.get(reverse('home'))
+        self.assertContains(response, 'New Post Title')
