@@ -399,6 +399,7 @@ a:hover {
     background-color: #17c24a; /* Green background for Edit button */
     color: #fff;
     border: none;
+    font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
@@ -410,6 +411,7 @@ a:hover {
     background-color: #dc3545; /* Red background for Delete button */
     color: #fff;
     border: none;
+    font-weight: bold;
     transition: background-color 0.3s ease;
 }
 

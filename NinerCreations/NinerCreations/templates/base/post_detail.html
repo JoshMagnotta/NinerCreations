@@ -44,19 +44,29 @@
         </div>
     </div>
 
+    
     <!-- Active Members Column -->
     <div class="pd-left">
-        <h3>Active Members</h3>
+        <!-- Owner Section -->
+        <h3>Owner</h3>
         <ul class="active-members-list" style="list-style: none; padding: 0; margin: 0;">
-            <!-- Display post owner first with inline styling for gold color -->
-            <li style="color: rgb(190, 164, 13); font-weight: bold; margin-bottom: 5px;">
+            <li style="color: rgb(190, 164, 13); font-weight: bold; margin-bottom: 10px;">
                 {{ post.author.username }}
             </li>
-            <!-- Display other members in green color with inline styling -->
+        </ul>
+
+        <!-- Spacer -->
+        <hr style="border: none; height: 1px; background-color: #ccc; margin: 10px 0;">
+
+        <!-- Members Section -->
+        <h3>Members</h3>
+        <ul class="active-members-list" style="list-style: none; padding: 0; margin: 0;">
             {% for member in members %}
-                <li style="color: green; font-weight: bold; margin-bottom: 5px;">
-                    {{ member.username }}
-                </li>
+                {% if member.username != post.author.username %}
+                    <li style="color: green; font-weight: bold; margin-bottom: 5px;">
+                        {{ member.username }}
+                    </li>
+                {% endif %}
             {% empty %}
                 <li style="font-style: italic; color: gray;">No members have joined yet.</li>
             {% endfor %}
