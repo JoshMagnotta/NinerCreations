@@ -23,8 +23,15 @@
     <main class="main-content">
         <h2>Latest Posts</h2>
         <div class="posts-list">
+            <!-- Add Post Button at the top -->
+            {% if user.is_authenticated %}
+                <div class="add-post-button-container">
+                    <a href="{% url 'create_post' %}" class="btn-add-post">Add Post</a>
+                </div>
+            {% endif %}
+
             {% for post in posts %}
-                <a href="{% url 'post_detail' post.id %}" class="post-item-link">
+                <a href="{% url 'post_detail' post.pk %}" class="post-item-link">
                     <div class="post-item">
                         <h3>{{ post.title }}</h3>
                         <p>{{ post.content|truncatewords:20 }}</p> <!-- Truncate content to first 20 words -->
@@ -37,8 +44,18 @@
                         <p class="post-meta">
                             <em>by {{ post.author.username }}</em> - {{ post.created_at|date:"M d, Y H:i" }}
                         </p>
-                        
-                        
+                        <!-- Check if the user is the post creator -->
+                        <!-- Check if the user is the post creator -->
+                        {% if post.author == user %}
+                            <div class="post-actions">
+                                <a href="{% url 'edit_post' post.id %}" class="btn btn-warning">Edit</a>
+                                <!-- Delete Button with Confirmation -->
+                                <form method="POST" action="{% url 'delete_post' post.id %}" style="display:inline;" onsubmit="return confirmDelete();">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        {% endif %}
                     </div>
                 </a>
             {% empty %}
@@ -72,4 +89,12 @@
         </ul>
     </aside>
 </div>
+
+<!-- Confirmation Script -->
+<script>
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this post? This action cannot be undone.");
+    }
+</script>
+
 {% endblock %}
