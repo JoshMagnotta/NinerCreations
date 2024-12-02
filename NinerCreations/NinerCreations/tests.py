@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from .models import Post, Topic, Comment, Project
 from .models import Post, Topic
 from django.utils.timezone import now
+from .models import Post, Comment
+from datetime import timedelta
 
 class SearchFunctionalityTestCase(TestCase):
     def setUp(self):
@@ -268,3 +270,62 @@ class HomePageFilterTestCase(TestCase):
         self.assertEqual(response.status_code, 200)  # Expect 200 for invalid topic ID
         self.assertContains(response, "No posts available.")
         
+class RecentActivityTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="password")
+
+        # Use explicit timestamps to control the order of activities
+        self.post1 = Post.objects.create(
+            author=self.user,
+            title="First Post",
+            content="Content of the first post.",
+            created_at=now() - timedelta(minutes=10)
+        )
+        self.post2 = Post.objects.create(
+            author=self.user,
+            title="Second Post",
+            content="Content of the second post.",
+            created_at=now() - timedelta(minutes=5)
+        )
+
+        self.comment1 = Comment.objects.create(
+            post=self.post1,
+            author=self.user,
+            content="First comment on the first post.",
+            created_at=now() - timedelta(minutes=8)
+        )
+        self.comment2 = Comment.objects.create(
+            post=self.post2,
+            author=self.user,
+            content="First comment on the second post.",
+            created_at=now() - timedelta(minutes=3)
+        )
+
+
+    def test_recent_activity(self):
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+    
+        # Validate the rendered HTML order matches the actual order
+        content = response.content.decode()
+    
+        # Update to match the rendered order: Posts first, then Comments
+        activity_rendered_order = [
+            "First Post",
+            "Second Post",
+            "First comment on the first post.",
+            "First comment on the second post.",
+        ]
+    
+        last_index = -1
+        for activity in activity_rendered_order:
+            current_index = content.find(activity)
+            self.assertNotEqual(current_index, -1, f"Activity '{activity}' not found in the rendered content.")
+            self.assertGreater(
+                current_index,
+                last_index,
+                f"Activity '{activity}' is out of order in the rendered content. "
+                f"Expected order: {activity_rendered_order}, but got mismatch at {activity}."
+            )
+            last_index = current_index
+
