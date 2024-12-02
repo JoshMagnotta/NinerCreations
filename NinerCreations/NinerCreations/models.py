@@ -1,11 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
+import os
+from django.conf import settings
+from django.core.files.storage import default_storage
 
 class Topic(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
+
 
 class Post(models.Model):
     PRIVACY_CHOICES = [
@@ -27,6 +31,7 @@ class Post(models.Model):
     def activity_type(self):
         return "Post"
 
+
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -35,11 +40,12 @@ class Comment(models.Model):
 
     def __str__(self):
         author_name = self.author.username if self.author else "Guest"
-        return f"Comment by {self.author} on {self.post}"
+        return f"Comment by {author_name} on {self.post}"
 
     @property
     def activity_type(self):
         return "Comment"
+
 
 class Activity(models.Model):
     ACTION_CHOICES = [
@@ -56,9 +62,34 @@ class Activity(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.get_action_display()} on {self.timestamp}"
 
+
 class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField()
     github_link = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+# The Profile model
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True, default='')
+    profile_picture = models.ImageField(
+        upload_to='profile_pictures/',
+        default='profile_pictures/profile-placeholder.png'
+    )
+
+    def __str__(self):
+        return self.user.username
+
+    def get_profile_picture_url(self):
+        """
+        Returns the profile picture URL if it exists, or the static placeholder otherwise.
+        """
+        if self.profile_picture and default_storage.exists(self.profile_picture.name):
+            return self.profile_picture.url
+        return os.path.join(settings.STATIC_URL, 'images/profile-placeholder.png')

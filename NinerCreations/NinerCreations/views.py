@@ -16,6 +16,11 @@ from .registerform import RegisterForm
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ValidationError
+from .models import Profile
+from .forms import ProfileForm
+from .models import Post, Comment, Project, Profile
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Post, Topic, Activity
 
 def recent_activity_view(request):
     # Query for the 10 most recent posts and comments
@@ -37,7 +42,6 @@ def recent_activity_view(request):
 from django.shortcuts import render, get_object_or_404
 from .models import Post, Comment, Topic
 
-# views.py
 
 def home_view(request):
     topic_id = request.GET.get('topic')
@@ -47,17 +51,22 @@ def home_view(request):
         try:
             topic_id = int(topic_id)
         except ValueError:
-            # If topic_id is not a valid integer, return the custom error page
-            return render(request, '400.html', status=400)
+            # Pass the error_message context to the 400.html template
+            return render(request, '400.html', {'error_message': 'Invalid topic parameter.'}, status=400)
 
-    # If a valid topic_id is provided, filter by topic, else show all posts
-    posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at') if topic_id else Post.objects.all().order_by('-created_at')
+    # Filter posts by topic if provided, otherwise return all posts
+    if topic_id:
+        posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at')
+        recent_posts = Post.objects.filter(topics__id=topic_id).order_by('-created_at')[:10]
+    else:
+        posts = Post.objects.all().order_by('-created_at')
+        recent_posts = Post.objects.all().order_by('-created_at')[:10]
 
-    # Retrieve the 10 most recent posts and comments
-    recent_posts = Post.objects.all().order_by('-created_at')[:10]
-    recent_comments = Comment.objects.all().order_by('-created_at')[:10]
+    # Retrieve comments related to the filtered posts
+    post_ids = posts.values_list('id', flat=True)
+    recent_comments = Comment.objects.filter(post__id__in=post_ids).order_by('-created_at')[:10]
 
-    # Combine posts and comments, then sort by created_at to get the 10 most recent activities
+    # Combine posts and comments, sorted by creation date, to get the 10 most recent activities
     recent_activities = sorted(
         list(recent_posts) + list(recent_comments),
         key=lambda x: x.created_at,
@@ -71,54 +80,57 @@ def home_view(request):
     return render(request, 'base/home.html', {
         'posts': posts,
         'recent_activities': recent_activities,
-        'topics': topics
+        'topics': topics,
     })
 
 @login_required
 def profile_view(request):
-    user = request.user
-    recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]  # Last 5 rooms
-    recent_posts = Post.objects.filter(author=user).order_by('-created_at')[:10]
-    recent_comments = Comment.objects.filter(author=user).order_by('-created_at')[:10]
-    projects = Project.objects.filter(user=user)
-    
-    # Combine posts and comments, then sort by created_at to get the 10 most recent activities
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    recent_rooms = Post.objects.filter(author=request.user).order_by('-created_at')[:5]
+    recent_posts = Post.objects.filter(author=request.user).order_by('-created_at')[:10]
+    recent_comments = Comment.objects.filter(author=request.user).order_by('-created_at')[:10]
+    projects = Project.objects.filter(user=request.user)
+
     recent_activities = sorted(
         list(recent_posts) + list(recent_comments),
         key=lambda x: x.created_at,
         reverse=True
     )[:10]
 
-    context = {
-        'user': user,
+    return render(request, 'base/profile.html', {
+        'profile': profile,
         'recent_rooms': recent_rooms,
         'recent_activities': recent_activities,
         'projects': projects,
-    }
-    return render(request, 'base/profile.html', context)
+    })
+
 
 
 def user_profile_view(request, pk):
-    # Get the user object based on the primary key (pk)
-    user = get_object_or_404(User, pk=pk)
-    
-    # Fetch recent rooms, posts, and comments by the user
-    recent_rooms = Post.objects.filter(author=user).order_by('-created_at')[:5]  # Last 5 rooms
-    recent_posts = Post.objects.filter(author=user).order_by('-created_at')[:10]
-    recent_comments = Comment.objects.filter(author=user).order_by('-created_at')[:10]
-    
-    # Combine posts and comments, then sort by created_at to get the 10 most recent activities
+    # Fetch the user object for the profile being viewed
+    profile_user = get_object_or_404(User, pk=pk)
+    profile, created = Profile.objects.get_or_create(user=profile_user)
+
+    # Fetch recent rooms, posts, and comments by the profile owner
+    recent_rooms = Post.objects.filter(author=profile_user).order_by('-created_at')[:5]
+    recent_posts = Post.objects.filter(author=profile_user).order_by('-created_at')[:10]
+    recent_comments = Comment.objects.filter(author=profile_user).order_by('-created_at')[:10]
+
+    # Combine posts and comments, sorted by creation date
     recent_activities = sorted(
         list(recent_posts) + list(recent_comments),
         key=lambda x: x.created_at,
         reverse=True
     )[:10]
-    # Fetch the completed projects for this user
-    projects = Project.objects.filter(user=user).order_by('-created_at')  # Adjust ordering if needed
 
-    # Pass data to the template
+    # Fetch the completed projects for this profile owner
+    projects = Project.objects.filter(user=profile_user).order_by('-created_at')
+
+    # Include bio and profile picture in the context
     context = {
-        'user': user,
+        'profile_user': profile_user,  # User whose profile is being viewed
+        'profile_picture': profile.profile_picture.url if profile.profile_picture else None,
+        'bio': profile.bio or "This user has not added a bio yet.",
         'recent_rooms': recent_rooms,
         'recent_activities': recent_activities,
         'projects': projects,
@@ -126,6 +138,7 @@ def user_profile_view(request, pk):
     return render(request, 'base/user_profile.html', context)
 
 # View to create a new post
+
 def create_post(request):
     # Fetch all topics to display in the form
     topics = Topic.objects.all()
@@ -343,16 +356,17 @@ def login(request):
 #Register account stuff
 def register(request):
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = RegisterForm(request.POST, request.FILES)  # Include `request.FILES` for file upload
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}!')
-            return redirect('login')  # Redirect to the login page after registration
+            messages.success(request, f'Account created for {username}! Please log in.')
+            return redirect('login')
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = RegisterForm()
     return render(request, 'base/register.html', {'form': form})
-
 def handle_invalid_topic_id(request, exception):
     # Render the custom 400 error page
     return render(request, '400.html', status=400)
@@ -425,3 +439,66 @@ def edit_project(request, project_id):
     # Render an edit form if method is GET
     context = {'project': project}
     return render(request, 'base/edit_project.html', context)
+
+# User Settings View
+@login_required
+def settings(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        # Update ProfileForm for bio and profile picture
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+
+        # Get new values for first name, last name, username, and email
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+
+        # Get and validate password inputs
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if form.is_valid():
+            # Update user details
+            user = request.user
+            user.first_name = first_name
+            user.last_name = last_name
+            user.username = username
+            user.email = email
+
+            # Handle password update if provided
+            if password and password == confirm_password:
+                user.set_password(password)
+
+            # Save user and profile changes
+            user.save()
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('settings')
+        else:
+            messages.error(request, "There was an error updating your profile.")
+
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'base/settings.html', {
+        'form': form,
+        'profile': profile,
+    })
+
+
+# Delete Account View
+@login_required
+def delete_account(request):
+    """
+    View to handle account deletion for the logged-in user.
+    """
+    if request.method == "POST":
+        user = request.user
+        user.delete()
+        messages.success(request, "Your account has been deleted.")
+        return redirect('home')
+
+    return render(request, 'base/delete_account.html')
+

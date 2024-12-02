@@ -1,20 +1,33 @@
 {% extends "base/base.html" %}
+{% load static %}
 
 {% block content %}
 <div class="profile-page-container">
-    <h1>{{ user.username }}'s Profile</h1>
-    <p><strong>Name:</strong> {{ user.get_full_name }}</p> <!-- Full name if both first and last are set -->
-    
+    <!-- Profile Picture Section -->
+    <div class="profile-header" style="text-align: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: center;">
+            {% if profile_picture %}
+                <img src="{{ profile_picture }}" alt="Profile Picture" class="profile-picture" style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover;">
+            {% else %}
+                <img src="{% static 'images/default_profile.png' %}" alt="Default Profile Picture" class="profile-picture" style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover;">
+            {% endif %}
+        </div>
+        <h1>{{ profile_user.username }}'s Profile</h1>
+        <p><strong>Name:</strong> {{ profile_user.get_full_name }}</p>
+        <p><strong>Bio:</strong> {{ bio }}</p>
+    </div>
+
+    <!-- Created Rooms Section -->
     <h2>Created Rooms</h2>
     {% if recent_rooms %}
         <ul>
             {% for room in recent_rooms %}
                 <li>
-                    <a class ="profile-tags" style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' room.id %}">
-                    <h3 style="margin-bottom: 10px;">{{ room.title }}</h3>
+                    <a href="{% url 'post_detail' room.id %}">
+                        <h3>{{ room.title }}</h3>
                     </a>
-                    <p style="text-align: left;">{{ room.content }}</p>
-                    <small>Created on {{ room.created_at|date:"M d, Y" }}</small>  
+                    <p>{{ room.content }}</p>
+                    <small>Created on {{ room.created_at|date:"M d, Y" }}</small>
                 </li>
             {% endfor %}
         </ul>
@@ -22,33 +35,35 @@
         <p>No rooms created yet.</p>
     {% endif %}
 
+    <!-- Recent Activities Section -->
     <h2>Recent Activities</h2>
     {% if recent_activities %}
         <div>
-        <ul>
-            {% for activity in recent_activities %}
-                <li>
-                    {% if activity.activity_type == "Post" %}
-                    <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.id %}">
-                        Post: {{ activity.title }}
-                    </a>
-                    {% elif activity.activity_type == "Comment" %}
-                    <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.post.id %}">
-                        Comment: {{ activity.content }}
-                    </a>
-                    {% endif %}
+            <ul>
+                {% for activity in recent_activities %}
+                    <li>
+                        {% if activity.activity_type == "Post" %}
+                            <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.id %}">
+                                Post: {{ activity.title }}
+                            </a>
+                        {% elif activity.activity_type == "Comment" %}
+                            <a style="color: #1A3D31; text-decoration: none;" href="{% url 'post_detail' activity.post.id %}">
+                                Comment: {{ activity.content }}
+                            </a>
+                        {% endif %}
                         {{ activity.created_at|date:"M d, Y H:i" }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
     {% else %}
         <p>No recent activities.</p>
     {% endif %}
-    <!-- end activities and rooms -->
+
     <hr style="color:#1A3D31;">
-    <h2 style="margin-bottom: 15px; margin-top: 15px; ">Completed Projects</h2>
+
+    <!-- Completed Projects Section -->
+    <h2 style="margin-bottom: 15px; margin-top: 15px;">Completed Projects</h2>
     {% if projects %}
         <ul>
             {% for project in projects %}
