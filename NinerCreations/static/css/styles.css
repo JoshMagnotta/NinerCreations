@@ -400,6 +400,7 @@ a:hover {
     color: #fff;
     border: none;
     font-weight: bold;
+    font-family: 'Arial', sans-serif; /* Define consistent font */
     transition: background-color 0.3s ease;
 }
 
@@ -412,6 +413,7 @@ a:hover {
     color: #fff;
     border: none;
     font-weight: bold;
+    font-family: 'Arial', sans-serif; /* Define consistent font */
     transition: background-color 0.3s ease;
 }
 
