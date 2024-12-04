@@ -466,6 +466,7 @@ a:hover {
     list-style-type: none; /* Hide bullet points */
     padding: 0;
     margin: 0;
+    text-decoration: none;
 }
 
 .activity-item {
