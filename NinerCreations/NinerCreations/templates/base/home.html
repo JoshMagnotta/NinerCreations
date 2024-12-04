@@ -42,9 +42,16 @@
                             {% endfor %}
                         </div>
                         <p class="post-meta">
-                            <em>by {{ post.author.username }}</em> - {{ post.created_at|date:"M d, Y H:i" }}
+                            <em>by &nbsp;
+                                {% if post.author and post.author.id %}
+                                    <a href="{% url 'user_profile' post.author.id %}">
+                                        {{ post.author.username }}
+                                    </a>
+                                {% else %}
+                                    {{ post.author.username }}
+                                {% endif %}
+                            </em> &nbsp;- {{ post.created_at|date:"M d, Y H:i" }}
                         </p>
-                        <!-- Check if the user is the post creator -->
                         <!-- Check if the user is the post creator -->
                         {% if post.author == user %}
                             <div class="post-actions">
@@ -81,7 +88,15 @@
                             {{ activity.content|truncatewords:10 }}
                         {% endif %}
                         <br>
-                        <em>{{ activity.author.username }}</em>
+                        <em>
+                            {% if activity.author and activity.author.id %}
+                                <a href="{% url 'user_profile' activity.author.id %}">
+                                    {{ activity.author.username }}
+                                </a>
+                            {% else %}
+                                {{ activity.author.username }}
+                            {% endif %}
+                        </em>
                         {% if activity.activity_type == "Comment" %} on {{ activity.post.title }} {% endif %} - {{ activity.created_at|date:"M d, Y H:i" }}
                     </div>
                 </li>
