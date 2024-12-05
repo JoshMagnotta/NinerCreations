@@ -466,6 +466,7 @@ a:hover {
     list-style-type: none; /* Hide bullet points */
     padding: 0;
     margin: 0;
+    text-decoration: none;
 }
 
 .activity-item {
@@ -611,6 +612,7 @@ a:hover {
     color: #888;
     font-size: 0.9rem;
     margin-top: 10px;
+    display: flex;
 }
 
 /* Make the entire post-item clickable */
@@ -942,6 +944,11 @@ a:hover {
 
 .post-tags {
     margin-top: 10px;
+    text-decoration: none;
+}
+
+.post-tags :hover {
+    text-decoration: none;
 }
 
 .post-tags .tag {

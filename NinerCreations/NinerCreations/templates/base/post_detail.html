@@ -36,8 +36,7 @@
         <div class="post-detail">
             <h2>{{ post.title }}</h2>
             <p class="post-meta">
-                <em>by {{ post.author.username }}</em> - {{ post.created_at|date:"M d, Y H:i" }}
-            </p>
+                <em>by <a href="{% url 'user_profile' post.author.id %}">{{ post.author.username }}</a></em> - {{ post.created_at|date:"M d, Y H:i" }}            </p>
             <div class="post-content">
                 {{ post.content }}
             </div>
@@ -51,7 +50,7 @@
         <h3>Owner</h3>
         <ul class="active-members-list" style="list-style: none; padding: 0; margin: 0;">
             <li style="color: rgb(190, 164, 13); font-weight: bold; margin-bottom: 10px;">
-                {{ post.author.username }}
+                {{ post.author.username }}   
             </li>
         </ul>
 
@@ -93,8 +92,7 @@
                 {% for comment in comments %}
                     <li class="comment">
                         <div class="comment-header">
-                            <strong class="comment-author">{{ comment.author.username|default:"Guest" }}</strong>
-                            <span class="comment-timestamp">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                            <strong class="comment-author"><a href="{% url 'user_profile' comment.author.id %}">{{ comment.author.username|default:"Guest" }}</a></strong>                            <span class="comment-timestamp">{{ comment.created_at|date:"M d, Y H:i" }}</span>
                         </div>
                         <div class="comment-content">
                             {{ comment.content }}

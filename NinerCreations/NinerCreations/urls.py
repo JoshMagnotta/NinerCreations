@@ -34,17 +34,16 @@ urlpatterns = [
     path('post/<int:pk>/', views.post_detail, name='post_detail'),  # New URL pattern for post detail and comments
     path('post/<int:pk>/comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
     path('search/', views.search, name='search'),  # Added search URL
+    path('profile/<int:pk>/', views.user_profile_view, name='user_profile'),
     path('profile/', views.profile_view, name='profile'),
     path('settings/', views.settings, name='settings'),
     path('login/', LoginView.as_view(template_name='base/login.html'), name='login'),    path('admin/', admin.site.urls, name='admin'),
     path('register/', views.register, name='register'),
-    path('profile/<int:pk>/', views.user_profile_view, name='user_profile'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),  # Add this line
     path('add_project/', views.add_project, name='add_project'),
     path('delete_project/<int:project_id>/', views.delete_project, name='delete_project'),
     path('edit-project/<int:project_id>/', views.edit_project, name='edit_project'),
     path('settings/', views.settings, name='settings'),
-    path('profile/', views.profile, name='profile'),
     path('delete-account/', views.delete_account, name='delete_account'),
 
 ]
