@@ -50,7 +50,8 @@
         <h3>Owner</h3>
         <ul class="active-members-list" style="list-style: none; padding: 0; margin: 0;">
             <li style="color: rgb(190, 164, 13); font-weight: bold; margin-bottom: 10px;">
-                <a href="{% url 'user_profile' post.author.id %}">{{ post.author.username }}</a>            </li>
+                {{ post.author.username }}   
+            </li>
         </ul>
 
         <!-- Spacer -->
@@ -62,7 +63,8 @@
             {% for member in members %}
                 {% if member.username != post.author.username %}
                     <li style="color: green; font-weight: bold; margin-bottom: 5px;">
-                        <a href="{% url 'user_profile' member.id %}">{{ member.username }}</a>                    </li>
+                        {{ member.username }}
+                    </li>
                 {% endif %}
             {% empty %}
                 <li style="font-style: italic; color: gray;">No members have joined yet.</li>
@@ -115,9 +117,9 @@
             {% for activity in recent_activities %}
                 <li style="margin-bottom: 10px;">
                     {% if activity.action == 'JOINED_POST' %}
-                        <span style="color: green; font-weight: bold;"> ➕ <a href="{% url 'user_profile' activity.user.id %}">{{ activity.user.username }}</a></span> joined the post.
+                        <span style="color: green; font-weight: bold;"> ➕ {{ activity.user.username }}</span> joined the post.
                     {% elif activity.action == 'LEFT_POST' %}
-                        <span style="color: red; font-weight: bold;"> ➖ <a href="{% url 'user_profile' activity.user.id %}">{{ activity.user.username }}</a></span> left the post.
+                        <span style="color: red; font-weight: bold;"> ➖ {{ activity.user.username }}</span> left the post.
                     {% endif %}
                     <br>
                     <em style="font-size: 0.9em;">{{ activity.timestamp|date:"M d, Y H:i" }}</em>
@@ -126,6 +128,6 @@
                 <li style="font-style: italic; color: gray;">No recent activity.</li>
             {% endfor %}
         </ul>
-    </div>
+    </div>    
 </div>
 {% endblock %}
